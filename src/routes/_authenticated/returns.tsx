@@ -51,9 +51,7 @@ function ReturnsPage() {
 
   const saveCost = useMutation({
     mutationFn: async ({ id, courier_cost }: { id: string; courier_cost: number }) => {
-      const { error } = await (
-        supabase as unknown as { from: (t: string) => any }
-      )
+      const { error } = await (supabase as unknown as { from: (t: string) => any })
         .from("parcel_returns")
         .update({ courier_cost })
         .eq("id", id);

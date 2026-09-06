@@ -84,14 +84,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: `${BRAND_NAME} — Cosmetics Shop Control Panel` },
       {
         name: "description",
-        content:
-          BRAND_DESCRIPTION,
+        content: BRAND_DESCRIPTION,
       },
       { property: "og:title", content: `${BRAND_NAME} — Cosmetics Shop Control Panel` },
       {
         property: "og:description",
-        content:
-          BRAND_DESCRIPTION,
+        content: BRAND_DESCRIPTION,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

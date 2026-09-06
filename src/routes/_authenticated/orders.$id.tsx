@@ -147,9 +147,7 @@ function OrderDetail() {
           qc.invalidateQueries({ queryKey: ["orders", o.id] });
           toast.success(`Parcel sent · tracking ${v.tracking_code}`);
         })
-        .catch((e) =>
-          toast.error(e instanceof Error ? e.message : "Could not send the parcel"),
-        );
+        .catch((e) => toast.error(e instanceof Error ? e.message : "Could not send the parcel"));
       return;
     }
     mutation.mutate(

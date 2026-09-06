@@ -226,8 +226,10 @@ function AnalyticsPage() {
       series: [...byDay.entries()].map(([key, v]) => ({ day: dayLabel(key), key, ...v })),
       average:
         byDay.size > 0
-          ? [...byDay.values()].reduce((s2, v) => s2 + (metric === "revenue" ? v.revenue : v.orders), 0) /
-            byDay.size
+          ? [...byDay.values()].reduce(
+              (s2, v) => s2 + (metric === "revenue" ? v.revenue : v.orders),
+              0,
+            ) / byDay.size
           : 0,
       topProducts: [...productSales.values()].sort((a, b) => b.revenue - a.revenue).slice(0, 6),
       sources: [...sourceCount.entries()].map(([name, value]) => ({ name, value })),
@@ -320,7 +322,14 @@ function AnalyticsPage() {
 
     const byCustomer = new Map<
       string,
-      { key: string; id: string | null; name: string; orders: number; revenue: number; returning: boolean }
+      {
+        key: string;
+        id: string | null;
+        name: string;
+        orders: number;
+        revenue: number;
+        returning: boolean;
+      }
     >();
     const byPhoneId = new Map<string, string>();
     for (const c of customers) {
@@ -345,7 +354,7 @@ function AnalyticsPage() {
       const ck = phone || o.customer_name || o.id;
       const entry = byCustomer.get(ck) ?? {
         key: ck,
-        id: o.customer_id ?? (phone ? byPhoneId.get(phone) ?? null : null),
+        id: o.customer_id ?? (phone ? (byPhoneId.get(phone) ?? null) : null),
         name: o.customer_name || phone || "Walk-in",
         orders: 0,
         revenue: 0,
@@ -388,11 +397,7 @@ function AnalyticsPage() {
     >
       <Stack gap="section">
         <Panel padding="sm" className="flex flex-wrap items-center gap-3">
-          <div
-            className="flex flex-wrap gap-1.5"
-            role="radiogroup"
-            aria-label="Date range"
-          >
+          <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Date range">
             {RANGES.map((r) => (
               <Button
                 key={r.days}
@@ -526,8 +531,7 @@ function AnalyticsPage() {
                       margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                       onClick={(e: { activeLabel?: string; activePayload?: unknown[] }) => {
                         const payload = e?.activePayload?.[0] as
-                          | { payload?: { key?: string } }
-                          | undefined;
+                          { payload?: { key?: string } } | undefined;
                         if (payload?.payload?.key) setDrillDay(payload.payload.key);
                       }}
                     >
@@ -741,11 +745,19 @@ function AnalyticsPage() {
                         <defs>
                           <linearGradient id="newFill" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="var(--color-chart-2)" stopOpacity={0.6} />
-                            <stop offset="100%" stopColor="var(--color-chart-2)" stopOpacity={0.05} />
+                            <stop
+                              offset="100%"
+                              stopColor="var(--color-chart-2)"
+                              stopOpacity={0.05}
+                            />
                           </linearGradient>
                           <linearGradient id="retFill" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="var(--color-chart-5)" stopOpacity={0.6} />
-                            <stop offset="100%" stopColor="var(--color-chart-5)" stopOpacity={0.05} />
+                            <stop
+                              offset="100%"
+                              stopColor="var(--color-chart-5)"
+                              stopOpacity={0.05}
+                            />
                           </linearGradient>
                         </defs>
                         <CartesianGrid
@@ -876,7 +888,10 @@ function AnalyticsPage() {
                               <span className="num text-body font-semibold">
                                 {currency(orderTotals(o).total)}
                               </span>
-                              <ArrowRight className="size-4 text-muted-foreground" aria-hidden="true" />
+                              <ArrowRight
+                                className="size-4 text-muted-foreground"
+                                aria-hidden="true"
+                              />
                             </span>
                           </Link>
                         </li>
@@ -923,7 +938,9 @@ function AnalyticsPage() {
                               stroke="var(--color-muted-foreground)"
                             />
                             <Tooltip
-                              cursor={{ fill: "color-mix(in oklab, var(--color-primary) 8%, transparent)" }}
+                              cursor={{
+                                fill: "color-mix(in oklab, var(--color-primary) 8%, transparent)",
+                              }}
                               contentStyle={CHART_TOOLTIP}
                             />
                             <Bar

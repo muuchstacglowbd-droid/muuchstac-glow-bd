@@ -117,9 +117,7 @@ function ImportPage() {
   const invalid = prepared.filter((r) => r.error);
   const totalAmount = useMemo(
     () =>
-      kind === "expenses"
-        ? valid.reduce((s, r) => s + Number(r.values["amount"] ?? 0), 0)
-        : 0,
+      kind === "expenses" ? valid.reduce((s, r) => s + Number(r.values["amount"] ?? 0), 0) : 0,
     [valid, kind],
   );
 
@@ -192,9 +190,7 @@ function ImportPage() {
                 }}
                 className={cn(
                   "flex min-h-11 items-start gap-3 rounded-2xl border p-4 text-start transition-colors",
-                  kind === k.key
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:bg-accent",
+                  kind === k.key ? "border-primary bg-primary/5" : "border-border hover:bg-accent",
                 )}
               >
                 <k.icon className="mt-0.5 size-5 text-primary" aria-hidden="true" />
@@ -356,13 +352,17 @@ function ImportPage() {
                 <table className="w-full text-caption" aria-label="Import preview">
                   <thead>
                     <tr className="text-start text-muted-foreground">
-                      <th scope="col" className="py-2 text-start">Row</th>
+                      <th scope="col" className="py-2 text-start">
+                        Row
+                      </th>
                       {IMPORT_FIELDS[kind].map((f) => (
                         <th key={f.key} scope="col" className="py-2 text-start">
                           {f.label}
                         </th>
                       ))}
-                      <th scope="col" className="py-2 text-start">Status</th>
+                      <th scope="col" className="py-2 text-start">
+                        Status
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/70">

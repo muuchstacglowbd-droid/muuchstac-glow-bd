@@ -3,13 +3,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Mail, MailCheck, Plus, Send, ShieldAlert, Trash2, UserRound } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import {
-  queueEmail,
-  useCustomers,
-  useEmailLog,
-  useOrders,
-  useTableMutation,
-} from "@/lib/data";
+import { queueEmail, useCustomers, useEmailLog, useOrders, useTableMutation } from "@/lib/data";
 import { currency, orderTotals, type Customer, type Order } from "@/lib/shop";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -383,9 +377,7 @@ function CustomersPage() {
       <Dialog open={!!mailTo} onOpenChange={(v) => !v && setMailTo(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl">
-              Email {mailTo?.name}
-            </DialogTitle>
+            <DialogTitle className="font-display text-2xl">Email {mailTo?.name}</DialogTitle>
           </DialogHeader>
           <form onSubmit={sendOrderMail} className="space-y-3">
             <p className="text-sm text-muted-foreground">Sending to {mailTo?.email}</p>

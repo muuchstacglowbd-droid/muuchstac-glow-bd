@@ -128,7 +128,9 @@ function CustomerProfile() {
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
-                      <span className={`rounded-full border px-2.5 py-1 text-caption capitalize ${statusTone(o.status)}`}>
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-caption capitalize ${statusTone(o.status)}`}
+                      >
                         {o.status.replace(/_/g, " ")}
                       </span>
                       <span className="num text-title font-semibold">

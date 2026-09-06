@@ -68,7 +68,10 @@ function DesignSystemPage() {
           </Grid>
         </Section>
 
-        <Section title="Type scale" description="Headings use the display font, text uses the body font.">
+        <Section
+          title="Type scale"
+          description="Headings use the display font, text uses the body font."
+        >
           <Panel padding="lg">
             <Stack gap="gutter">
               {TYPE.map(([name, cls]) => (
@@ -81,7 +84,10 @@ function DesignSystemPage() {
           </Panel>
         </Section>
 
-        <Section title="Spacing rhythm" description="gutter · block · section — used for every gap and padding.">
+        <Section
+          title="Spacing rhythm"
+          description="gutter · block · section — used for every gap and padding."
+        >
           <Panel padding="lg">
             <Stack gap="gutter">
               {[
@@ -136,9 +142,21 @@ function DesignSystemPage() {
 
         <Section title="Stat tiles">
           <Grid cols={3}>
-            <StatTile label="Revenue" value="৳ 42,500" hint="Delivered only" icon={Coins} tone="primary" />
+            <StatTile
+              label="Revenue"
+              value="৳ 42,500"
+              hint="Delivered only"
+              icon={Coins}
+              tone="primary"
+            />
             <StatTile label="Orders" value="128" hint="This month" icon={ShoppingBag} />
-            <StatTile label="Out of stock" value="3" hint="Restock soon" icon={PackageX} tone="warning" />
+            <StatTile
+              label="Out of stock"
+              value="3"
+              hint="Restock soon"
+              icon={PackageX}
+              tone="warning"
+            />
           </Grid>
         </Section>
 

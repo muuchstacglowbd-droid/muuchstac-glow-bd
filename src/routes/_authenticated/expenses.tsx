@@ -47,15 +47,7 @@ export const Route = createFileRoute("/_authenticated/expenses")({
   component: ExpensesPage,
 });
 
-const CATEGORIES = [
-  "packaging",
-  "delivery",
-  "ads",
-  "salary",
-  "rent",
-  "purchase",
-  "other",
-] as const;
+const CATEGORIES = ["packaging", "delivery", "ads", "salary", "rent", "purchase", "other"] as const;
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -225,7 +217,9 @@ function ExpensesPage() {
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    <span className="num text-title font-semibold">{currency(Number(e.amount))}</span>
+                    <span className="num text-title font-semibold">
+                      {currency(Number(e.amount))}
+                    </span>
                     <Button variant="ghost" size="icon" onClick={() => remove(e.id)}>
                       <Trash2 className="size-4 text-destructive" />
                     </Button>

@@ -31,22 +31,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  buildDailyProfit,
-  daysToCsv,
-  shiftDays,
-  sumDays,
-  todayKey,
-} from "@/lib/profit";
+import { buildDailyProfit, daysToCsv, shiftDays, sumDays, todayKey } from "@/lib/profit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/profit")({
@@ -111,12 +100,10 @@ function ProfitPage() {
     note: "",
   });
 
-
   const [productFilter, setProductFilter] = useState("all");
   const [customerFilter, setCustomerFilter] = useState("all");
   const [zoneFilter, setZoneFilter] = useState("all");
-  const filtering =
-    productFilter !== "all" || customerFilter !== "all" || zoneFilter !== "all";
+  const filtering = productFilter !== "all" || customerFilter !== "all" || zoneFilter !== "all";
 
   const productOptions = useMemo(() => {
     const s = new Set<string>();
@@ -135,8 +122,7 @@ function ProfitPage() {
       orders.filter((o) => {
         if (zoneFilter !== "all" && (o.delivery_zone ?? "inside_dhaka") !== zoneFilter)
           return false;
-        if (customerFilter !== "all" && (o.customer_name ?? "") !== customerFilter)
-          return false;
+        if (customerFilter !== "all" && (o.customer_name ?? "") !== customerFilter) return false;
         if (
           productFilter !== "all" &&
           !(o.order_items ?? []).some((i) => i.product_name === productFilter)
@@ -214,7 +200,6 @@ function ProfitPage() {
     entryForm.ret_qty,
   ]);
 
-
   const draftDay = useMemo(() => {
     const n = (v: string) => (Number.isFinite(Number(v)) ? Number(v) : 0);
     const nn = (v: string) => (v.trim() === "" ? null : n(v));
@@ -254,7 +239,6 @@ function ProfitPage() {
     )[0];
   }, [orders, expenses, adSpends, entryForm, autoReturn]);
 
-
   function applyPreset(label: string, days_: number) {
     setActivePreset(label);
     if (days_ === 0) {
@@ -291,7 +275,6 @@ function ProfitPage() {
     setEntryOpen(true);
   }
 
-
   function numOrZero(v: string) {
     const n = Number(v);
     return Number.isFinite(n) ? n : 0;
@@ -323,7 +306,6 @@ function ProfitPage() {
     }
   }
 
-
   async function saveDayReturn() {
     const qty = autoReturn.qty;
     const values = {
@@ -335,9 +317,7 @@ function ProfitPage() {
       courier_cost: numOrZero(entryForm.ret_courier),
       note: null as string | null,
     };
-    const ids = returns
-      .filter((r) => r.sent_date === entryForm.entry_date)
-      .map((r) => r.id);
+    const ids = returns.filter((r) => r.sent_date === entryForm.entry_date).map((r) => r.id);
     const empty = !qty && !values.courier_cost;
 
     if (empty) {
@@ -352,19 +332,21 @@ function ProfitPage() {
       for (const id of ids.slice(1)) {
         await returnMutation.mutateAsync({ action: "delete", id });
       }
-
     } else {
       await returnMutation.mutateAsync({ action: "insert", values });
     }
   }
-
 
   function downloadCsv() {
     const blob = new Blob([daysToCsv(rows)], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 24);
+    const slug = (s: string) =>
+      s
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .slice(0, 24);
     const parts = [
       productFilter !== "all" ? slug(productFilter) : "",
       customerFilter !== "all" ? slug(customerFilter) : "",
@@ -374,8 +356,6 @@ function ProfitPage() {
     a.click();
     URL.revokeObjectURL(url);
   }
-
-  
 
   return (
     <AppShell
@@ -484,8 +464,8 @@ function ProfitPage() {
           {filtering && (
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <span>
-                Filtered view — only matching orders are counted. Hand-typed day costs, ad
-                spend and returns are left out.
+                Filtered view — only matching orders are counted. Hand-typed day costs, ad spend and
+                returns are left out.
               </span>
               <Button
                 size="sm"
@@ -516,7 +496,11 @@ function ProfitPage() {
             hint={`${totals.returnedParcels} returned · ${totals.returnRate.toFixed(1)}%`}
           />
           <Stat label="Product cost" value={currency(totals.cogs)} />
-          <Stat label="Ad cost" value={currency(totals.adCost)} hint={`${currency(totals.adPerParcel)} / parcel`} />
+          <Stat
+            label="Ad cost"
+            value={currency(totals.adCost)}
+            hint={`${currency(totals.adPerParcel)} / parcel`}
+          />
           <Stat
             label="Packaging + other"
             value={currency(totals.packagingCost + totals.otherCost)}
@@ -556,7 +540,6 @@ function ProfitPage() {
           Swipe the table sideways to see every column.
         </p>
         <section className="table-scroll rounded-2xl border border-border bg-card">
-
           <table className="w-full min-w-[900px] text-sm">
             <thead className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
@@ -612,9 +595,7 @@ function ProfitPage() {
             </tbody>
           </table>
         </section>
-
       </div>
-
 
       <Dialog open={entryOpen} onOpenChange={setEntryOpen}>
         <DialogContent className="max-h-[92vh] overflow-y-auto p-0 sm:max-w-xl">
@@ -748,7 +729,6 @@ function ProfitPage() {
               </p>
             </LedgerRow>
 
-
             <LedgerRow
               step={8}
               label="Return courier cost"
@@ -764,7 +744,6 @@ function ProfitPage() {
                 onChange={(e) => setEntryForm({ ...entryForm, ret_courier: e.target.value })}
               />
             </LedgerRow>
-
 
             <LedgerRow
               step={9}
@@ -859,8 +838,6 @@ function ProfitPage() {
           </div>
         </DialogContent>
       </Dialog>
-
-
     </AppShell>
   );
 }

@@ -286,10 +286,18 @@ function OnboardingPage() {
                 an order, with tracking updates coming back automatically.
               </p>
               <ol className="space-y-2 text-body text-muted-foreground">
-                <li>1. Sign in to your State First merchant panel and copy the API key and secret key.</li>
-                <li>2. Paste both into Courier settings and save them — they stay private on the server.</li>
+                <li>
+                  1. Sign in to your State First merchant panel and copy the API key and secret key.
+                </li>
+                <li>
+                  2. Paste both into Courier settings and save them — they stay private on the
+                  server.
+                </li>
                 <li>3. Press Test connection to confirm your courier balance loads.</li>
-                <li>4. Copy the delivery-update link shown there into your State First webhook settings.</li>
+                <li>
+                  4. Copy the delivery-update link shown there into your State First webhook
+                  settings.
+                </li>
               </ol>
               <div className="flex flex-wrap gap-2">
                 <Button variant="hero" asChild>
@@ -353,7 +361,9 @@ function ChecklistTile({ label, done }: { label: string; done: boolean }) {
     <div
       className={cn(
         "flex items-center gap-2 rounded-xl border p-3 text-caption",
-        done ? "border-success/40 bg-success/10 text-success" : "border-border text-muted-foreground",
+        done
+          ? "border-success/40 bg-success/10 text-success"
+          : "border-border text-muted-foreground",
       )}
     >
       <span

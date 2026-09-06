@@ -4,10 +4,11 @@ import { orderTotals } from "./shop";
 import type { Customer, Order, Product, ShopSettings } from "./shop";
 import { BRAND_LOGO_URL, BRAND_NAME } from "./brand";
 
-const db = () => supabase as unknown as {
-  from: (t: string) => any;
-  auth: typeof supabase.auth;
-};
+const db = () =>
+  supabase as unknown as {
+    from: (t: string) => any;
+    auth: typeof supabase.auth;
+  };
 
 async function uid() {
   const { data } = await supabase.auth.getUser();
@@ -139,13 +140,15 @@ export async function createOrder({ order, items }: NewOrderInput) {
           .from("products")
           .update({ stock: Math.max(0, (p.stock ?? 0) - it.qty) })
           .eq("id", it.product_id);
-        await db().from("stock_movements").insert({
-          user_id,
-          product_id: it.product_id,
-          change: -it.qty,
-          reason: "sale",
-          note: `Order ${orderId.slice(0, 8)}`,
-        });
+        await db()
+          .from("stock_movements")
+          .insert({
+            user_id,
+            product_id: it.product_id,
+            change: -it.qty,
+            reason: "sale",
+            note: `Order ${orderId.slice(0, 8)}`,
+          });
       }
     }
   }
@@ -182,13 +185,15 @@ export async function markOrderShipped(order: Order) {
   const { error } = await db().from("orders").update(values).eq("id", order.id);
   if (error) throw error;
 
-  await db().from("courier_events").insert({
-    user_id,
-    order_id: order.id,
-    provider,
-    status: values.courier_status,
-    note: `Parcel sent · tracking ${tracking}`,
-  });
+  await db()
+    .from("courier_events")
+    .insert({
+      user_id,
+      order_id: order.id,
+      provider,
+      status: values.courier_status,
+      note: `Parcel sent · tracking ${tracking}`,
+    });
 
   return values;
 }
@@ -208,24 +213,28 @@ async function restockOrder(order: Order, reason: "return" | "cancel") {
       .from("products")
       .update({ stock: (p.stock ?? 0) + it.qty })
       .eq("id", it.product_id);
-    await db().from("stock_movements").insert({
-      user_id,
-      product_id: it.product_id,
-      change: it.qty,
-      reason,
-      note: `Order #${order.order_no}`,
-    });
+    await db()
+      .from("stock_movements")
+      .insert({
+        user_id,
+        product_id: it.product_id,
+        change: it.qty,
+        reason,
+        note: `Order #${order.order_no}`,
+      });
   }
 }
 
 async function logCourierEvent(order: Order, status: string, note: string) {
-  await db().from("courier_events").insert({
-    user_id: await uid(),
-    order_id: order.id,
-    provider: order.courier_provider || "manual",
-    status,
-    note,
-  });
+  await db()
+    .from("courier_events")
+    .insert({
+      user_id: await uid(),
+      order_id: order.id,
+      provider: order.courier_provider || "manual",
+      status,
+      note,
+    });
 }
 
 /** Marks the parcel delivered — money counts as earned, stock stays sold. */
@@ -316,10 +325,6 @@ export async function markOrderReturned(order: Order, courierCost = 0) {
     courierCost > 0 ? `Returned · courier cost ৳${courierCost}` : "Parcel returned",
   );
 }
-
-
-
-
 
 export interface Expense {
   id: string;

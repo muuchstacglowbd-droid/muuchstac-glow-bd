@@ -105,7 +105,11 @@ export function AppShell({
       className="flex h-full flex-col gap-1 overflow-y-auto bg-sidebar p-4 text-sidebar-foreground"
     >
       <div className="mb-6 flex items-center justify-between px-1">
-        <Link to="/" className="flex min-w-0 items-center gap-3 rounded-xl" aria-label={`${BRAND_NAME} control panel home`}>
+        <Link
+          to="/"
+          className="flex min-w-0 items-center gap-3 rounded-xl"
+          aria-label={`${BRAND_NAME} control panel home`}
+        >
           <img
             src={BRAND_LOGO_URL}
             alt={`${BRAND_NAME} logo`}
@@ -193,7 +197,12 @@ export function AppShell({
       </aside>
 
       {open && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+        <div
+          className="fixed inset-0 z-50 lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+        >
           <div
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             onClick={() => setOpen(false)}
@@ -225,7 +234,6 @@ export function AppShell({
           {/* On phones the page's own buttons drop to their own line and wrap,
               so nothing is ever pushed off the right edge. */}
           <div className="flex w-full min-w-0 flex-wrap items-center justify-end gap-2 sm:w-auto">
-
             <button
               type="button"
               onClick={() => palette.setOpen(true)}
@@ -262,12 +270,19 @@ export function AppShell({
             <ThemeSwitcher />
           </div>
         </header>
-        <main id="main-content" tabIndex={-1} className="px-4 py-6 pb-24 outline-none md:px-8 lg:pb-6">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="px-4 py-6 pb-24 outline-none md:px-8 lg:pb-6"
+        >
           <PageTransition key={pathname}>{children}</PageTransition>
         </main>
       </div>
 
-      <nav aria-label="Quick navigation" className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border/70 bg-background/85 backdrop-blur-xl lg:hidden">
+      <nav
+        aria-label="Quick navigation"
+        className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border/70 bg-background/85 backdrop-blur-xl lg:hidden"
+      >
         {MOBILE_TABS.map((t) => {
           const active = isActive(pathname, t.to);
           return (

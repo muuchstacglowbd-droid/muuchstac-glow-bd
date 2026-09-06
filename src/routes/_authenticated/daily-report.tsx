@@ -104,20 +104,33 @@ function DailyReportPage() {
           />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => { setFrom(today); setTo(today); }}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setFrom(today);
+              setTo(today);
+            }}
+          >
             Today
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => { setFrom(shiftDays(today, -6)); setTo(today); }}
+            onClick={() => {
+              setFrom(shiftDays(today, -6));
+              setTo(today);
+            }}
           >
             Last 7 days
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => { setFrom(shiftDays(today, -29)); setTo(today); }}
+            onClick={() => {
+              setFrom(shiftDays(today, -29));
+              setTo(today);
+            }}
           >
             Last 30 days
           </Button>
@@ -146,7 +159,6 @@ function DailyReportPage() {
             <MiniStat label="Cancelled" value={todayRow.status.cancelled} />
             <MiniStat label="Not sent yet" value={todayRow.status.notSent} />
           </div>
-
         </div>
       )}
 
@@ -191,10 +203,7 @@ function DailyReportPage() {
               <MiniFact label="Parcels" value={String(d.parcels)} />
               <MiniFact label="On the way" value={String(d.status.onTheWay)} />
               <MiniFact label="Delivered" value={String(d.status.delivered)} />
-              <MiniFact
-                label="Returned"
-                value={String(d.status.returned || d.returnedParcels)}
-              />
+              <MiniFact label="Returned" value={String(d.status.returned || d.returnedParcels)} />
               <MiniFact label="Sales" value={currency(d.revenue)} />
               <MiniFact label="Product cost" value={currency(d.cogs)} />
               <MiniFact label="Ads" value={currency(d.adCost)} />
@@ -207,7 +216,6 @@ function DailyReportPage() {
       <div className="surface mt-4 hidden overflow-hidden lg:block">
         <div className="table-scroll">
           <table className="w-full text-sm">
-
             <thead className="bg-muted/50 text-left text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
               <tr>
                 <th className="px-4 py-2.5 font-semibold">Date</th>
@@ -254,7 +262,6 @@ function DailyReportPage() {
 
       <ReportEmailCard />
     </AppShell>
-
   );
 }
 
@@ -272,8 +279,8 @@ function ReportEmailCard() {
         Daily report by email
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        Every night at 11:00 PM the full day — parcels, parcel status, sales, cost and net
-        profit — is emailed to this address.
+        Every night at 11:00 PM the full day — parcels, parcel status, sales, cost and net profit —
+        is emailed to this address.
       </p>
       <div className="mt-3 flex flex-wrap items-end gap-3">
         <div className="space-y-1.5">
@@ -302,8 +309,7 @@ function ReportEmailCard() {
               { report_email: next, daily_report_enabled: true },
               {
                 onSuccess: () => toast.success("Daily report email saved"),
-                onError: (e) =>
-                  toast.error(e instanceof Error ? e.message : "Could not save"),
+                onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save"),
               },
             );
           }}
@@ -337,7 +343,6 @@ function ReportEmailCard() {
 }
 
 function MiniStat({ label, value }: { label: string; value: number }) {
-
   return (
     <div className="rounded-lg border border-border/70 bg-muted/30 p-3">
       <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -349,7 +354,6 @@ function MiniStat({ label, value }: { label: string; value: number }) {
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
-
   return (
     <div className="surface p-5">
       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">

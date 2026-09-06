@@ -111,7 +111,9 @@ export function Invoice({ order }: { order: Order }) {
                           : []
                     ).slice(0, 3);
                     if (photos.length === 0)
-                      return <div className="size-11 rounded-lg border border-dashed border-border" />;
+                      return (
+                        <div className="size-11 rounded-lg border border-dashed border-border" />
+                      );
                     return (
                       <div className="flex shrink-0 gap-1">
                         {photos.map((src, n) => (

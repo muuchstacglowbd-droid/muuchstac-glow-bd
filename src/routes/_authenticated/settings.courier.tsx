@@ -65,9 +65,7 @@ function CourierSettings() {
   const testMutation = useMutation({
     mutationFn: () => test({}),
     onSuccess: (r) =>
-      r.ok
-        ? toast.success(`Connected — courier balance ৳${r.balance}`)
-        : toast.error(r.error),
+      r.ok ? toast.success(`Connected — courier balance ৳${r.balance}`) : toast.error(r.error),
   });
 
   const autoMutation = useMutation({
@@ -96,10 +94,7 @@ function CourierSettings() {
     info.data?.connected && webhookPath ? `${stableSiteUrl()}${webhookPath}` : null;
 
   return (
-    <AppShell
-      title="Courier settings"
-      subtitle={`Connect your ${COURIER_LABEL} merchant account`}
-    >
+    <AppShell title="Courier settings" subtitle={`Connect your ${COURIER_LABEL} merchant account`}>
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="surface space-y-4 p-5">
           <h2 className="flex items-center gap-2 text-lg">
@@ -176,8 +171,8 @@ function CourierSettings() {
         <div className="surface space-y-4 p-5">
           <h2 className="text-lg">Instant status updates</h2>
           <p className="text-sm text-muted-foreground">
-            In your {COURIER_LABEL} merchant panel open <b>Webhook Integration</b>. It asks for
-            two things — copy them from here, one into each box, then save.
+            In your {COURIER_LABEL} merchant panel open <b>Webhook Integration</b>. It asks for two
+            things — copy them from here, one into each box, then save.
           </p>
           {webhookUrl && info.data?.webhookToken ? (
             <div className="space-y-4">
@@ -230,7 +225,6 @@ function CourierSettings() {
                 </div>
               )}
 
-
               <div className="space-y-2">
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   2. Auth Token (Bearer)
@@ -262,7 +256,6 @@ function CourierSettings() {
             </p>
           )}
         </div>
-
       </div>
     </AppShell>
   );

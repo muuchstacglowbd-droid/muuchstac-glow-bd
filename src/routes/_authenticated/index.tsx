@@ -9,30 +9,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  ArrowUpRight,
-  PackageX,
-  TrendingUp,
-  Wallet,
-  ShoppingBag,
-  Users,
-} from "lucide-react";
+import { ArrowUpRight, PackageX, TrendingUp, Wallet, ShoppingBag, Users } from "lucide-react";
 import { ChartSkeleton, StatGridSkeleton } from "@/components/ds/skeletons";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingPrompt } from "@/components/OnboardingPrompt";
 import { useOrders, useProducts, useCustomers } from "@/lib/data";
-import {
-  currency,
-  dayKey,
-  orderTotals,
-  statusTone,
-  ORDER_STATUSES,
-  type Order,
-} from "@/lib/shop";
+import { currency, dayKey, orderTotals, statusTone, ORDER_STATUSES, type Order } from "@/lib/shop";
 import { Button } from "@/components/ui/button";
 import { COURIER_LABEL, courierStatusLabel, courierStatusTone } from "@/lib/courier";
 import { cn } from "@/lib/utils";
-
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -174,7 +159,6 @@ function Dashboard() {
     return [...known, ...extra];
   }, [orders]);
 
-
   const today = useMemo(() => {
     const key = dayKey(new Date());
     const list = (orders as Order[]).filter((o) => dayKey(o.created_at) === key);
@@ -186,7 +170,12 @@ function Dashboard() {
       revenue += t.total;
       profit += t.profit;
     }
-    return { count: list.length, revenue, profit, toShip: list.filter((o) => o.status === "confirmed").length };
+    return {
+      count: list.length,
+      revenue,
+      profit,
+      toShip: list.filter((o) => o.status === "confirmed").length,
+    };
   }, [orders]);
 
   const pipelineMax = Math.max(1, ...pipeline.map((p) => p.count));
@@ -238,7 +227,6 @@ function Dashboard() {
       </div>
 
       <div className="bento">
-
         {/* KPI row */}
         <div className="xl:col-span-3">
           <Kpi
@@ -388,8 +376,6 @@ function Dashboard() {
             </ul>
           )}
         </div>
-
-
 
         {/* Recent orders */}
         <div className="surface overflow-hidden sm:col-span-2 xl:col-span-4">

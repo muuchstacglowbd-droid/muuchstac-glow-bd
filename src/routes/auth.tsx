@@ -134,8 +134,7 @@ function AuthPage() {
             Every order, invoice and jar of stock — in one calm place.
           </h2>
           <p className="mt-5 max-w-sm text-sm text-muted-foreground">
-            A control panel built for cosmetics sellers: orders, courier, profit and
-            customers.
+            A control panel built for cosmetics sellers: orders, courier, profit and customers.
           </p>
         </div>
         <p className="text-xs text-muted-foreground">© {BRAND_NAME}</p>
@@ -206,9 +205,7 @@ function AuthPage() {
             className="mt-6 w-full text-sm text-muted-foreground underline-offset-4 hover:underline"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           >
-            {mode === "signin"
-              ? "New here? Create an account"
-              : "Already have an account? Sign in"}
+            {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
           </button>
         </div>
       </div>

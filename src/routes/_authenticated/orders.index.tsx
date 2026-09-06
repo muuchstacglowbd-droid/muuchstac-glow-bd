@@ -58,7 +58,6 @@ export const Route = createFileRoute("/_authenticated/orders/")({
   validateSearch: (search: Record<string, unknown>): { new?: true } =>
     search["new"] === true || search["new"] === "true" ? { new: true } : {},
 
-
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
@@ -378,10 +377,8 @@ function OrdersPage() {
         </div>
       }
     >
-
       <div className="surface flex flex-wrap items-end gap-3 p-4">
         <div className="w-full sm:min-w-52 sm:flex-1">
-
           <Label className="text-xs text-muted-foreground">Search</Label>
           <div className="relative mt-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -394,7 +391,6 @@ function OrdersPage() {
           </div>
         </div>
         <div className="w-full sm:w-40">
-
           <Label className="text-xs text-muted-foreground">Status</Label>
           <Select value={status} onValueChange={(v) => setStatus(v as OrderStatus | "all")}>
             <SelectTrigger className="mt-1 w-full capitalize">
@@ -535,21 +531,36 @@ function OrdersPage() {
       <div className="surface mt-4 hidden overflow-hidden lg:block">
         <div className="table-scroll">
           <table className="w-full text-sm" aria-label="Orders">
-
             <thead className="bg-muted/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th scope="col" className="px-4 py-2.5 font-medium">#</th>
-                <th scope="col" className="px-4 py-2.5 font-medium">Customer</th>
-                <th scope="col" className="px-4 py-2.5 font-medium">Source</th>
-                <th scope="col" className="px-4 py-2.5 font-medium">Status</th>
-                <th scope="col" className="px-4 py-2.5 font-medium">Courier</th>
-                <th scope="col" className="px-4 py-2.5 text-right font-medium">Total</th>
-                <th scope="col" className="px-4 py-2.5 text-right font-medium">Due</th>
-                <th scope="col" className="px-4 py-2.5 text-right font-medium">Actions</th>
+                <th scope="col" className="px-4 py-2.5 font-medium">
+                  #
+                </th>
+                <th scope="col" className="px-4 py-2.5 font-medium">
+                  Customer
+                </th>
+                <th scope="col" className="px-4 py-2.5 font-medium">
+                  Source
+                </th>
+                <th scope="col" className="px-4 py-2.5 font-medium">
+                  Status
+                </th>
+                <th scope="col" className="px-4 py-2.5 font-medium">
+                  Courier
+                </th>
+                <th scope="col" className="px-4 py-2.5 text-right font-medium">
+                  Total
+                </th>
+                <th scope="col" className="px-4 py-2.5 text-right font-medium">
+                  Due
+                </th>
+                <th scope="col" className="px-4 py-2.5 text-right font-medium">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
-{isLoading &&
+              {isLoading &&
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="border-t border-border/70">
                     {Array.from({ length: 8 }).map((__, c) => (
@@ -748,7 +759,10 @@ function OrdersPage() {
               </p>
             )}
             {items.map((it, idx) => (
-              <div key={idx} className="flex flex-wrap items-end gap-2 rounded-lg border border-border p-2">
+              <div
+                key={idx}
+                className="flex flex-wrap items-end gap-2 rounded-lg border border-border p-2"
+              >
                 <span className="min-w-32 flex-1 truncate text-sm">{it.product_name}</span>
                 <div className="w-20">
                   <Label className="text-xs text-muted-foreground">Qty</Label>

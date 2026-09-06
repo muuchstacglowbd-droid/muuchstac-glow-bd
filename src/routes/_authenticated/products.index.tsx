@@ -193,9 +193,7 @@ function ProductsPage() {
                       <p className="text-xs text-muted-foreground">
                         {[p.brand, p.category].filter(Boolean).join(" · ") || "—"}
                       </p>
-                      {p.sku && (
-                        <p className="num text-xs text-muted-foreground">SKU {p.sku}</p>
-                      )}
+                      {p.sku && <p className="num text-xs text-muted-foreground">SKU {p.sku}</p>}
                     </div>
                     <div className="flex shrink-0 gap-1">
                       <Button size="icon" variant="ghost" onClick={() => openEdit(p)}>
@@ -227,20 +225,31 @@ function ProductsPage() {
 
         <div className="hidden table-scroll lg:block">
           <table className="w-full text-sm" aria-label="Products">
-
             <thead className="bg-muted/60 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th scope="col" className="px-4 py-2 font-medium">Product</th>
-                <th scope="col" className="px-4 py-2 font-medium">SKU</th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">Buy</th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">Sell</th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">Margin</th>
-                <th scope="col" className="px-4 py-2 text-right font-medium">Stock</th>
+                <th scope="col" className="px-4 py-2 font-medium">
+                  Product
+                </th>
+                <th scope="col" className="px-4 py-2 font-medium">
+                  SKU
+                </th>
+                <th scope="col" className="px-4 py-2 text-right font-medium">
+                  Buy
+                </th>
+                <th scope="col" className="px-4 py-2 text-right font-medium">
+                  Sell
+                </th>
+                <th scope="col" className="px-4 py-2 text-right font-medium">
+                  Margin
+                </th>
+                <th scope="col" className="px-4 py-2 text-right font-medium">
+                  Stock
+                </th>
                 <th scope="col" className="px-4 py-2" />
               </tr>
             </thead>
             <tbody>
-{isLoading &&
+              {isLoading &&
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="border-t border-border/70">
                     {Array.from({ length: 7 }).map((__, c) => (
@@ -250,7 +259,7 @@ function ProductsPage() {
                     ))}
                   </tr>
                 ))}
-              
+
               {!isLoading && filtered.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-14 text-center">
@@ -334,7 +343,9 @@ function ProductsPage() {
               <MultiImageUploadField
                 label="Product photos"
                 value={form.image_urls}
-                onChange={(urls) => setForm({ ...form, image_urls: urls, image_url: urls[0] ?? null })}
+                onChange={(urls) =>
+                  setForm({ ...form, image_urls: urls, image_url: urls[0] ?? null })
+                }
               />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
@@ -394,9 +405,7 @@ function ProductsPage() {
               <Input
                 type="number"
                 value={form.low_stock_threshold}
-                onChange={(e) =>
-                  setForm({ ...form, low_stock_threshold: Number(e.target.value) })
-                }
+                onChange={(e) => setForm({ ...form, low_stock_threshold: Number(e.target.value) })}
               />
             </div>
             <DialogFooter className="sm:col-span-2">

@@ -89,7 +89,11 @@ function InvoiceSettings() {
         <section className="surface space-y-3 p-4">
           <h2 className="text-lg">Company</h2>
           <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 p-3">
-            <img src={BRAND_LOGO_URL} alt={`${BRAND_NAME} logo`} className="size-14 rounded-md object-cover" />
+            <img
+              src={BRAND_LOGO_URL}
+              alt={`${BRAND_NAME} logo`}
+              className="size-14 rounded-md object-cover"
+            />
             <div>
               <Label>Permanent brand</Label>
               <p className="font-display text-lg font-semibold">{BRAND_NAME}</p>

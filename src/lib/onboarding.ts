@@ -53,7 +53,9 @@ export function useUpdateProfile() {
   const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (patch: Partial<OnboardingProfile> & { onboarding_completed_at?: string }) => {
+    mutationFn: async (
+      patch: Partial<OnboardingProfile> & { onboarding_completed_at?: string },
+    ) => {
       if (!user) throw new Error("Not signed in");
       const { error } = await supabase
         .from("profiles")

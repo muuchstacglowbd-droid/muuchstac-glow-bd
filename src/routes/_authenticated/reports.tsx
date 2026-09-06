@@ -77,11 +77,20 @@ function ReportsPage() {
   const monthly = useMemo(() => {
     const map = new Map<
       string,
-      { key: string; label: string; revenue: number; profit: number; expense: number; orders: number }
+      {
+        key: string;
+        label: string;
+        revenue: number;
+        profit: number;
+        expense: number;
+        orders: number;
+      }
     >();
     const row = (k: string) =>
       map.get(k) ??
-      map.set(k, { key: k, label: monthLabel(k), revenue: 0, profit: 0, expense: 0, orders: 0 }).get(k)!;
+      map
+        .set(k, { key: k, label: monthLabel(k), revenue: 0, profit: 0, expense: 0, orders: 0 })
+        .get(k)!;
 
     for (const o of orders as Order[]) {
       if (o.status !== "delivered") continue;
@@ -213,10 +222,7 @@ function ReportsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthly} margin={{ top: 8, right: 8, bottom: 8, left: -18 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                  />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                   <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                   <Tooltip
                     contentStyle={{
@@ -227,8 +233,18 @@ function ReportsPage() {
                     formatter={(v: number) => currency(Number(v))}
                   />
                   <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Bar dataKey="revenue" name="Income" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="expense" name="Expense" fill="var(--destructive)" radius={[6, 6, 0, 0]} />
+                  <Bar
+                    dataKey="revenue"
+                    name="Income"
+                    fill="var(--primary)"
+                    radius={[6, 6, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="expense"
+                    name="Expense"
+                    fill="var(--destructive)"
+                    radius={[6, 6, 0, 0]}
+                  />
                   <Bar dataKey="net" name="Net earning" fill="var(--gold)" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
