@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Override the Cloudflare default: this project deploys to Netlify, so
+  // Nitro must build a Netlify Functions + static output instead.
+  nitro: {
+    preset: "netlify",
+  },
 });
