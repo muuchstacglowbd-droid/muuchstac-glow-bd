@@ -16,6 +16,7 @@ import {
   LineChart,
   X,
   Upload,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";

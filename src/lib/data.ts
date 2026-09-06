@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { orderTotals } from "./shop";
 import type { Customer, Order, Product, ShopSettings } from "./shop";
+import { BRAND_LOGO_URL, BRAND_NAME } from "./brand";
 
 const db = () => supabase as unknown as {
   from: (t: string) => any;
@@ -388,7 +389,8 @@ export function useShopSettings() {
     queryFn: async (): Promise<ShopSettings | null> => {
       const { data, error } = await db().from("shop_settings").select("*").maybeSingle();
       if (error) throw error;
-      return data ?? null;
+      if (!data) return null;
+      return { ...data, company_name: BRAND_NAME, logo_url: BRAND_LOGO_URL };
     },
   });
 }
@@ -400,7 +402,10 @@ export function useSaveShopSettings() {
       const user_id = await uid();
       const { error } = await db()
         .from("shop_settings")
-        .upsert({ ...values, user_id }, { onConflict: "user_id" });
+        .upsert(
+          { ...values, company_name: BRAND_NAME, logo_url: BRAND_LOGO_URL, user_id },
+          { onConflict: "user_id" },
+        );
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["shop_settings"] }),
