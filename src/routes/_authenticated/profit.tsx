@@ -52,13 +52,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/profit")({
   head: () => ({
     meta: [
-      { title: "Daily Profit & Returns — Rose Nude" },
+      { title: "Daily Profit & Returns — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Track daily ad cost, packaging, product cost, parcels sent and returns to see the exact net profit for any day, week, month or custom date range.",
       },
-      { property: "og:title", content: "Daily Profit & Returns — Rose Nude" },
+      { property: "og:title", content: "Daily Profit & Returns — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

@@ -30,13 +30,13 @@ import {
 export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({
     meta: [
-      { title: "Stock & Income Report — Rose Nude" },
+      { title: "Stock & Income Report — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Monthly income from delivered orders minus expenses, plus a stock bar chart of every product in your shop.",
       },
-      { property: "og:title", content: "Stock & Income Report — Rose Nude" },
+      { property: "og:title", content: "Stock & Income Report — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

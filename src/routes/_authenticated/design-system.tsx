@@ -9,13 +9,13 @@ import { EmptyState, Eyebrow, Grid, Panel, Pill, Section, Stack, StatTile } from
 export const Route = createFileRoute("/_authenticated/design-system")({
   head: () => ({
     meta: [
-      { title: "Design system — Rose Nude Control Panel" },
+      { title: "Design system — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "The shared colours, type scale, spacing, buttons and building blocks used across the shop panel.",
       },
-      { property: "og:title", content: "Design system — Rose Nude Control Panel" },
+      { property: "og:title", content: "Design system — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content:
@@ -72,7 +72,7 @@ function DesignSystemPage() {
               {TYPE.map(([name, cls]) => (
                 <div key={name} className="flex flex-wrap items-baseline gap-4">
                   <span className="w-24 shrink-0 text-caption text-muted-foreground">{name}</span>
-                  <span className={cls}>Rose Nude Cosmetics</span>
+                  <span className={cls}>Muuchstac Glow BD</span>
                 </div>
               ))}
             </Stack>

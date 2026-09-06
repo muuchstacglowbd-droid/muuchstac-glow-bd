@@ -61,13 +61,13 @@ export const Route = createFileRoute("/_authenticated/orders/")({
 
   head: () => ({
     meta: [
-      { title: "Orders — Rose Nude Control Panel" },
+      { title: "Orders — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "Browse, filter and manage every cosmetics order, update status and open invoices.",
       },
-      { property: "og:title", content: "Orders — Rose Nude Control Panel" },
+      { property: "og:title", content: "Orders — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content:

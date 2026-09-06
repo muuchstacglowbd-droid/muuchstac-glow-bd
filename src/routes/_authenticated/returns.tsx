@@ -12,13 +12,13 @@ import { currency } from "@/lib/shop";
 export const Route = createFileRoute("/_authenticated/returns")({
   head: () => ({
     meta: [
-      { title: "Returned parcels — Rose Nude" },
+      { title: "Returned parcels — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Every returned parcel in one list: order, refunded sale value, product cost back and the courier charge you paid for the return.",
       },
-      { property: "og:title", content: "Returned parcels — Rose Nude" },
+      { property: "og:title", content: "Returned parcels — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

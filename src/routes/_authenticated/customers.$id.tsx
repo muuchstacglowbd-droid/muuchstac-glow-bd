@@ -10,12 +10,12 @@ import { currency, orderTotals, statusTone, countsRevenue, type Order } from "@/
 export const Route = createFileRoute("/_authenticated/customers/$id")({
   head: () => ({
     meta: [
-      { title: "Customer profile — Rose Nude Control Panel" },
+      { title: "Customer profile — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content: "Full order history, lifetime value and contact details for one customer.",
       },
-      { property: "og:title", content: "Customer profile — Rose Nude Control Panel" },
+      { property: "og:title", content: "Customer profile — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content: "Order history, lifetime value and contact details for one customer.",

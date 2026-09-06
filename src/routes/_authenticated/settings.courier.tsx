@@ -21,13 +21,13 @@ import { siteUrl, siteUrlPath, stableSiteUrl } from "@/lib/site-url";
 export const Route = createFileRoute("/_authenticated/settings/courier")({
   head: () => ({
     meta: [
-      { title: "Courier settings — Rose Nude" },
+      { title: "Courier settings — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Connect your State First merchant account so orders can be sent to the courier and tracked automatically.",
       },
-      { property: "og:title", content: "Courier settings — Rose Nude" },
+      { property: "og:title", content: "Courier settings — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

@@ -55,13 +55,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({
     meta: [
-      { title: "Analytics — Rose Nude Control Panel" },
+      { title: "Analytics — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "See sales trends, best selling products, order sources and repeat customers for your cosmetics shop.",
       },
-      { property: "og:title", content: "Analytics — Rose Nude Control Panel" },
+      { property: "og:title", content: "Analytics — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content: "Sales trends, top products, order sources and repeat customer share.",

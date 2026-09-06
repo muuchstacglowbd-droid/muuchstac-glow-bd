@@ -12,12 +12,12 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/_authenticated/products/$id")({
   head: () => ({
     meta: [
-      { title: "Edit product — Rose Nude" },
+      { title: "Edit product — Muuchstac Glow BD" },
       {
         name: "description",
         content: "Update a product's price, stock level and details, or remove it from your shop.",
       },
-      { property: "og:title", content: "Edit product — Rose Nude" },
+      { property: "og:title", content: "Edit product — Muuchstac Glow BD" },
       {
         property: "og:description",
         content: "Update a product's price, stock level and details, or remove it from your shop.",

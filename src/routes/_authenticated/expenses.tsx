@@ -29,13 +29,13 @@ import { downloadCsv } from "@/lib/csv";
 export const Route = createFileRoute("/_authenticated/expenses")({
   head: () => ({
     meta: [
-      { title: "Expenses — Rose Nude Control Panel" },
+      { title: "Expenses — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "Track packaging, delivery, ads, salary and other shop costs month by month in one simple book.",
       },
-      { property: "og:title", content: "Expenses — Rose Nude Control Panel" },
+      { property: "og:title", content: "Expenses — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content: "Track packaging, delivery, ads and other shop costs month by month.",

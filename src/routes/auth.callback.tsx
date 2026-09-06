@@ -6,12 +6,12 @@ import { REDIRECT_STORAGE_KEY } from "@/lib/site-url";
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({
     meta: [
-      { title: "Signing you in — Rose Nude Control Panel" },
+      { title: "Signing you in — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content: "Finishing your sign-in and taking you back to your shop dashboard.",
       },
-      { property: "og:title", content: "Signing you in — Rose Nude Control Panel" },
+      { property: "og:title", content: "Signing you in — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content: "Finishing your sign-in and taking you back to your shop dashboard.",

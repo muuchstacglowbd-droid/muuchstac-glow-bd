@@ -28,13 +28,13 @@ import { BRAND_NAME } from "@/lib/brand";
 export const Route = createFileRoute("/_authenticated/customers/")({
   head: () => ({
     meta: [
-      { title: "Customers & Email List — Rose Nude" },
+      { title: "Customers & Email List — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Keep customer name, mobile, address and email in one book, manage email subscriptions and send order updates.",
       },
-      { property: "og:title", content: "Customers & Email List — Rose Nude" },
+      { property: "og:title", content: "Customers & Email List — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

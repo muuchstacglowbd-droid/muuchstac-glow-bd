@@ -23,13 +23,13 @@ import {
 export const Route = createFileRoute("/_authenticated/products/")({
   head: () => ({
     meta: [
-      { title: "Products & Inventory — Rose Nude" },
+      { title: "Products & Inventory — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Add, edit and track cosmetics products, buy/sell price, stock levels and low-stock alerts.",
       },
-      { property: "og:title", content: "Products & Inventory — Rose Nude" },
+      { property: "og:title", content: "Products & Inventory — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

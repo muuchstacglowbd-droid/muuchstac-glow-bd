@@ -26,13 +26,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
-      { title: "Get started — Rose Nude Control Panel" },
+      { title: "Get started — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "A guided setup: name your shop, learn the dashboard, add your first order and connect State First courier.",
       },
-      { property: "og:title", content: "Get started — Rose Nude Control Panel" },
+      { property: "og:title", content: "Get started — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content:
@@ -167,7 +167,7 @@ function OnboardingPage() {
                   <Input
                     id="shop"
                     value={shopName}
-                    placeholder="Rose Nude Cosmetics"
+                    placeholder="Muuchstac Glow BD"
                     onChange={(e) => setShopName(e.target.value)}
                   />
                 </div>

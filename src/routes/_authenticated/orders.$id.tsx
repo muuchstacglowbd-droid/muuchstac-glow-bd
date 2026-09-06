@@ -32,13 +32,13 @@ export const Route = createFileRoute("/_authenticated/orders/$id")({
     search["invoice"] === true || search["invoice"] === "true" ? { invoice: true } : {},
   head: () => ({
     meta: [
-      { title: "Order details & invoice — Rose Nude" },
+      { title: "Order details & invoice — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "See order line items, costs and profit, update the status and print a customer invoice.",
       },
-      { property: "og:title", content: "Order details & invoice — Rose Nude" },
+      { property: "og:title", content: "Order details & invoice — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

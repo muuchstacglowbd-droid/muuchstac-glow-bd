@@ -23,13 +23,13 @@ import { currency } from "@/lib/shop";
 export const Route = createFileRoute("/_authenticated/daily-report")({
   head: () => ({
     meta: [
-      { title: "Daily Report — Rose Nude" },
+      { title: "Daily Report — Muuchstac Glow BD" },
       {
         name: "description",
         content:
           "Your day-end sheet: parcels sent, returns, sales, costs and net profit for every date, ready to download as a spreadsheet.",
       },
-      { property: "og:title", content: "Daily Report — Rose Nude" },
+      { property: "og:title", content: "Daily Report — Muuchstac Glow BD" },
       {
         property: "og:description",
         content:

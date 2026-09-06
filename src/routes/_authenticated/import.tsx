@@ -40,13 +40,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/import")({
   head: () => ({
     meta: [
-      { title: "Data import — Rose Nude Control Panel" },
+      { title: "Data import — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "Bring your existing home expenses and customer list into the panel from a CSV or spreadsheet in a few clicks.",
       },
-      { property: "og:title", content: "Data import — Rose Nude Control Panel" },
+      { property: "og:title", content: "Data import — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content: "Upload a CSV of expenses or customers, check the preview, then import.",

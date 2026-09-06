@@ -37,13 +37,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Rose Nude Cosmetics Control Panel" },
+      { title: "Dashboard — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
         content:
           "Daily revenue, profit, order pipeline and low-stock alerts for your cosmetics shop.",
       },
-      { property: "og:title", content: "Dashboard — Rose Nude Cosmetics Control Panel" },
+      { property: "og:title", content: "Dashboard — Muuchstac Glow BD Control Panel" },
       {
         property: "og:description",
         content:
