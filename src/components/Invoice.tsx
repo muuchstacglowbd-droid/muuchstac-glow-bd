@@ -1,10 +1,11 @@
 import { useShopSettings } from "@/lib/data";
 import { currency, deliveryZoneLabel, invoiceNo, orderTotals, type Order } from "@/lib/shop";
+import { BRAND_LOGO_URL, BRAND_NAME, BRAND_TAGLINE } from "@/lib/brand";
 
 const FALLBACK = {
-  company_name: "Rose Nude",
-  tagline: "Beauty & Cosmetics",
-  logo_url: null as string | null,
+  company_name: BRAND_NAME,
+  tagline: BRAND_TAGLINE,
+  logo_url: BRAND_LOGO_URL,
   address: null as string | null,
   phone: null as string | null,
   email: null as string | null,
@@ -14,7 +15,13 @@ const FALLBACK = {
 
 export function Invoice({ order }: { order: Order }) {
   const { data: settings } = useShopSettings();
-  const shop = { ...FALLBACK, ...(settings ?? {}) };
+  const shop = {
+    ...FALLBACK,
+    ...(settings ?? {}),
+    company_name: BRAND_NAME,
+    tagline: settings?.tagline || BRAND_TAGLINE,
+    logo_url: BRAND_LOGO_URL,
+  };
   const t = orderTotals(order);
   const items = order.order_items ?? [];
   const isFree = (order.shipping_charge || 0) <= 0 || order.delivery_zone === "free";
@@ -28,17 +35,11 @@ export function Invoice({ order }: { order: Order }) {
     <div className="print-area mx-auto w-full max-w-2xl bg-card p-8 text-foreground">
       <header className="flex items-start justify-between gap-6 border-b border-border pb-6">
         <div className="flex items-start gap-4">
-          {shop.logo_url ? (
-            <img
-              src={shop.logo_url}
-              alt={`${shop.company_name} logo`}
-              className="size-16 rounded-xl object-contain"
-            />
-          ) : (
-            <div className="flex size-16 items-center justify-center rounded-xl border border-dashed border-border text-[10px] uppercase tracking-wide text-muted-foreground">
-              Logo
-            </div>
-          )}
+          <img
+            src={shop.logo_url}
+            alt={`${shop.company_name} logo`}
+            className="size-16 rounded-lg object-cover"
+          />
           <div>
             <h2 className="font-display text-3xl leading-none">{shop.company_name}</h2>
             {shop.tagline && <p className="mt-1 text-xs text-muted-foreground">{shop.tagline}</p>}

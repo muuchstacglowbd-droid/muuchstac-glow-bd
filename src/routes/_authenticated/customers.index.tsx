@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { BRAND_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/_authenticated/customers/")({
   head: () => ({
@@ -180,8 +181,8 @@ function CustomersPage() {
         customer_id: mailTo.id,
         order_id: order.id,
         to_email: mailTo.email,
-        subject: `Rose Nude — order #${order.order_no} is ${order.status}`,
-        body: `Hi ${mailTo.name},\n\nHere is an update on your order #${order.order_no} (${order.status}).\n\n${lines}\n\nTotal: ${currency(t.total)}\nPaid: ${currency(order.advance_paid)}\nDue: ${currency(t.due)}\n\nThank you for shopping with Rose Nude.`,
+        subject: `${BRAND_NAME} — order #${order.order_no} is ${order.status}`,
+        body: `Hi ${mailTo.name},\n\nHere is an update on your order #${order.order_no} (${order.status}).\n\n${lines}\n\nTotal: ${currency(t.total)}\nPaid: ${currency(order.advance_paid)}\nDue: ${currency(t.due)}\n\nThank you for shopping with ${BRAND_NAME}.`,
       });
       qc.invalidateQueries({ queryKey: ["email_log"] });
       toast.success("Order email queued for " + mailTo.email);

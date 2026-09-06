@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { Toaster } from "@/components/ui/sonner";
+import { BRAND_DESCRIPTION, BRAND_NAME } from "@/lib/brand";
 
 function NotFoundComponent() {
   return (
@@ -80,17 +81,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rose Nude — Cosmetics Shop Control Panel" },
+      { title: `${BRAND_NAME} — Cosmetics Shop Control Panel` },
       {
         name: "description",
         content:
-          "Manage cosmetics orders, invoices, inventory and customers in one elegant control panel.",
+          BRAND_DESCRIPTION,
       },
-      { property: "og:title", content: "Rose Nude — Cosmetics Shop Control Panel" },
+      { property: "og:title", content: `${BRAND_NAME} — Cosmetics Shop Control Panel` },
       {
         property: "og:description",
         content:
-          "Manage cosmetics orders, invoices, inventory and customers in one elegant control panel.",
+          BRAND_DESCRIPTION,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -103,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,

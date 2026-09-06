@@ -7,17 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { BRAND_LOGO_URL, BRAND_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/_authenticated/settings/invoice")({
   head: () => ({
     meta: [
-      { title: "Invoice & delivery settings — Rose Nude" },
+      { title: `Invoice & delivery settings — ${BRAND_NAME}` },
       {
         name: "description",
         content:
           "Set your logo, shop address, Dhaka and outside-Dhaka delivery charges and the thank-you note printed on every invoice.",
       },
-      { property: "og:title", content: "Invoice & delivery settings — Rose Nude" },
+      { property: "og:title", content: `Invoice & delivery settings — ${BRAND_NAME}` },
       {
         property: "og:description",
         content:
@@ -33,9 +34,7 @@ function InvoiceSettings() {
   const save = useSaveShopSettings();
 
   const [form, setForm] = useState({
-    company_name: "Rose Nude",
     tagline: "Beauty & Cosmetics",
-    logo_url: "",
     address: "",
     phone: "",
     email: "",
@@ -48,9 +47,7 @@ function InvoiceSettings() {
   useEffect(() => {
     if (!settings) return;
     setForm({
-      company_name: settings.company_name ?? "",
       tagline: settings.tagline ?? "",
-      logo_url: settings.logo_url ?? "",
       address: settings.address ?? "",
       phone: settings.phone ?? "",
       email: settings.email ?? "",
@@ -73,7 +70,7 @@ function InvoiceSettings() {
           disabled={save.isPending}
           onClick={() =>
             save.mutate(
-              { ...form, logo_url: form.logo_url || null },
+              { ...form, company_name: BRAND_NAME, logo_url: BRAND_LOGO_URL },
               {
                 onSuccess: () => toast.success("Saved"),
                 onError: (e) =>
@@ -89,27 +86,16 @@ function InvoiceSettings() {
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="surface space-y-3 p-4">
           <h2 className="text-lg">Company</h2>
-          <div>
-            <Label>Company name</Label>
-            <Input
-              value={form.company_name}
-              onChange={(e) => set("company_name", e.target.value)}
-            />
+          <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 p-3">
+            <img src={BRAND_LOGO_URL} alt={`${BRAND_NAME} logo`} className="size-14 rounded-md object-cover" />
+            <div>
+              <Label>Permanent brand</Label>
+              <p className="font-display text-lg font-semibold">{BRAND_NAME}</p>
+            </div>
           </div>
           <div>
             <Label>Tagline</Label>
             <Input value={form.tagline} onChange={(e) => set("tagline", e.target.value)} />
-          </div>
-          <div>
-            <Label>Logo image link</Label>
-            <Input
-              value={form.logo_url}
-              onChange={(e) => set("logo_url", e.target.value)}
-              placeholder="https://…"
-            />
-            <p className="mt-1 text-xs text-muted-foreground">
-              Paste your logo link here whenever it is ready.
-            </p>
           </div>
           <div>
             <Label>Address</Label>

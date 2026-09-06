@@ -11,7 +11,6 @@ import {
   ReceiptText,
   Menu,
   LogOut,
-  Sparkles,
   Search,
   Wallet,
   LineChart,
@@ -28,6 +27,7 @@ import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { useGlobalShortcuts } from "@/lib/shortcuts";
 import { PageTransition } from "@/components/ds/skeletons";
 import { CalendarDays, Keyboard, Undo2 } from "lucide-react";
+import { BRAND_LOGO_URL, BRAND_NAME } from "@/lib/brand";
 
 const NAV_GROUPS = [
   {
@@ -104,12 +104,14 @@ export function AppShell({
       className="flex h-full flex-col gap-1 overflow-y-auto bg-sidebar p-4 text-sidebar-foreground"
     >
       <div className="mb-6 flex items-center justify-between px-1">
-        <Link to="/" className="flex items-center gap-3 rounded-xl" aria-label="Rose Nude control panel home">
-          <span className="grid size-10 place-items-center rounded-2xl gold-gradient shadow-lg">
-            <Sparkles className="size-4 text-sidebar-primary-foreground" />
-          </span>
+        <Link to="/" className="flex min-w-0 items-center gap-3 rounded-xl" aria-label={`${BRAND_NAME} control panel home`}>
+          <img
+            src={BRAND_LOGO_URL}
+            alt={`${BRAND_NAME} logo`}
+            className="size-11 shrink-0 rounded-lg object-cover shadow-lg"
+          />
           <span className="leading-tight">
-            <span className="block font-display text-lg font-bold">Rose&nbsp;Nude</span>
+            <span className="block font-display text-base font-bold">{BRAND_NAME}</span>
             <span className="block text-[0.6rem] uppercase tracking-[0.22em] text-sidebar-foreground/55">
               Control panel
             </span>

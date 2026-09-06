@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { AUTH_CALLBACK_PATH, REDIRECT_STORAGE_KEY, siteUrlPath } from "@/lib/site-url";
+import { BRAND_LOGO_URL, BRAND_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
@@ -21,12 +21,12 @@ export const Route = createFileRoute("/auth")({
   },
   head: () => ({
     meta: [
-      { title: "Sign in — Rose Nude Control Panel" },
+      { title: `Sign in — ${BRAND_NAME} Control Panel` },
       {
         name: "description",
         content: "Sign in to manage your cosmetics shop orders, stock and invoices.",
       },
-      { property: "og:title", content: "Sign in — Rose Nude Control Panel" },
+      { property: "og:title", content: `Sign in — ${BRAND_NAME} Control Panel` },
       {
         property: "og:description",
         content: "Sign in to manage your cosmetics shop orders, stock and invoices.",
@@ -120,10 +120,12 @@ function AuthPage() {
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden flex-col justify-between rose-gradient p-12 lg:flex">
         <div className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-2xl gold-gradient">
-            <Sparkles className="size-4 text-primary-foreground" />
-          </span>
-          <span className="font-display text-2xl font-bold">Rose Nude</span>
+          <img
+            src={BRAND_LOGO_URL}
+            alt={`${BRAND_NAME} logo`}
+            className="size-14 rounded-lg object-cover shadow-lg"
+          />
+          <span className="font-display text-2xl font-bold">{BRAND_NAME}</span>
         </div>
         <div>
           <h2 className="font-display text-5xl font-bold leading-[1.05]">
@@ -134,7 +136,7 @@ function AuthPage() {
             customers.
           </p>
         </div>
-        <p className="text-xs text-muted-foreground">© Rose Nude Beauty</p>
+        <p className="text-xs text-muted-foreground">© {BRAND_NAME}</p>
       </div>
 
       <div className="relative flex items-center justify-center px-6 py-16">
