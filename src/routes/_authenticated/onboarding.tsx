@@ -22,6 +22,7 @@ import { ONBOARDING_STEPS, useProfile, useUpdateProfile } from "@/lib/onboarding
 import { useOrders } from "@/lib/data";
 import { getCourierAccount } from "@/lib/courier.functions";
 import { cn } from "@/lib/utils";
+import { BRAND_NAME } from "@/lib/brand";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -60,13 +61,11 @@ function OnboardingPage() {
   const courier = useQuery({ queryKey: ["courier_account"], queryFn: () => courierFn({}) });
 
   const [step, setStep] = useState(0);
-  const [shopName, setShopName] = useState("");
   const [fullName, setFullName] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     if (!profile.data || hydrated) return;
-    setShopName(profile.data.shop_name ?? "");
     setFullName(profile.data.full_name ?? "");
     setStep(Math.min(profile.data.onboarding_step ?? 0, ONBOARDING_STEPS - 1));
     setHydrated(true);
@@ -158,18 +157,15 @@ function OnboardingPage() {
                 <h2 className="text-display font-semibold">Welcome aboard</h2>
               </div>
               <p className="text-body text-muted-foreground">
-                Tell us who you are and what your shop is called. We use this on invoices and
-                across the panel.
+                Confirm your name. Your permanent shop brand is shown on invoices and across the
+                panel.
               </p>
               <div className="grid gap-gutter sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="shop">Shop name</Label>
-                  <Input
-                    id="shop"
-                    value={shopName}
-                    placeholder="Muuchstac Glow BD"
-                    onChange={(e) => setShopName(e.target.value)}
-                  />
+                  <Label>Permanent shop name</Label>
+                  <div className="flex h-10 items-center rounded-md border border-border bg-muted/50 px-3 text-sm font-semibold">
+                    {BRAND_NAME}
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="name">Your name</Label>
@@ -187,7 +183,7 @@ function OnboardingPage() {
                   size="lg"
                   onClick={() => {
                     update.mutate({
-                      shop_name: shopName.trim() || null,
+                      shop_name: BRAND_NAME,
                       full_name: fullName.trim() || null,
                     });
                     go(1);
@@ -317,7 +313,7 @@ function OnboardingPage() {
                 dashboard.
               </p>
               <div className="grid gap-gutter sm:grid-cols-3">
-                <ChecklistTile label="Shop named" done={!!shopName.trim()} />
+                <ChecklistTile label="Shop named" done />
                 <ChecklistTile label="First order added" done={hasOrder} />
                 <ChecklistTile label="Courier connected" done={courierConnected} />
               </div>

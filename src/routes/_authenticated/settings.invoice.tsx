@@ -16,13 +16,13 @@ export const Route = createFileRoute("/_authenticated/settings/invoice")({
       {
         name: "description",
         content:
-          "Set your logo, shop address, Dhaka and outside-Dhaka delivery charges and the thank-you note printed on every invoice.",
+          "Set your shop address, Dhaka and outside-Dhaka delivery charges and the thank-you note printed on every invoice.",
       },
       { property: "og:title", content: `Invoice & delivery settings — ${BRAND_NAME}` },
       {
         property: "og:description",
         content:
-          "Set your logo, shop address, delivery charges and the thank-you note printed on every invoice.",
+          "Set your shop address, delivery charges and the thank-you note printed on every invoice.",
       },
     ],
   }),

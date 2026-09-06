@@ -1,4 +1,4 @@
 - [x] Import uploaded project safely
-- [ ] Add permanent brand name and logo
-- [ ] Update saved defaults and old branding
+- [x] Add permanent brand name and logo
+- [x] Update saved defaults and old branding
 - [ ] Verify pages, icon, and checks

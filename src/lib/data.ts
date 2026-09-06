@@ -390,6 +390,13 @@ export function useShopSettings() {
       const { data, error } = await db().from("shop_settings").select("*").maybeSingle();
       if (error) throw error;
       if (!data) return null;
+      if (data.company_name !== BRAND_NAME || data.logo_url !== BRAND_LOGO_URL) {
+        const { error: brandError } = await db()
+          .from("shop_settings")
+          .update({ company_name: BRAND_NAME, logo_url: BRAND_LOGO_URL })
+          .eq("user_id", data.user_id);
+        if (brandError) throw brandError;
+      }
       return { ...data, company_name: BRAND_NAME, logo_url: BRAND_LOGO_URL };
     },
   });
