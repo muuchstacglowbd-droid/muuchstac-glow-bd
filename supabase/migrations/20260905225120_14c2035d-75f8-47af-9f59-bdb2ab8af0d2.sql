@@ -1,8 +1,22 @@
-CREATE TYPE public.app_role AS ENUM ('owner','manager','staff');
-CREATE TYPE public.order_source AS ENUM ('facebook','whatsapp','walkin','instagram','phone','other');
-CREATE TYPE public.order_status AS ENUM ('pending','confirmed','packed','shipped','delivered','returned','cancelled');
+-- =========================================================
+-- Idempotent version: safe to re-run multiple times
+-- =========================================================
 
-CREATE TABLE public.profiles (
+-- ---------- ENUM TYPES ----------
+DO $$ BEGIN
+  CREATE TYPE public.app_role AS ENUM ('owner','manager','staff');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE public.order_source AS ENUM ('facebook','whatsapp','walkin','instagram','phone','other');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE public.order_status AS ENUM ('pending','confirmed','packed','shipped','delivered','returned','cancelled');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ---------- profiles ----------
+CREATE TABLE IF NOT EXISTS public.profiles (
   id uuid PRIMARY KEY,
   full_name text,
   shop_name text,
@@ -14,11 +28,18 @@ CREATE TABLE public.profiles (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;
 GRANT ALL ON public.profiles TO service_role;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own profile select" ON public.profiles;
 CREATE POLICY "own profile select" ON public.profiles FOR SELECT TO authenticated USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "own profile insert" ON public.profiles;
 CREATE POLICY "own profile insert" ON public.profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS "own profile update" ON public.profiles;
 CREATE POLICY "own profile update" ON public.profiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
-CREATE TABLE public.user_roles (
+-- ---------- user_roles ----------
+CREATE TABLE IF NOT EXISTS public.user_roles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   role public.app_role NOT NULL,
@@ -27,6 +48,8 @@ CREATE TABLE public.user_roles (
 GRANT SELECT ON public.user_roles TO authenticated;
 GRANT ALL ON public.user_roles TO service_role;
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own roles select" ON public.user_roles;
 CREATE POLICY "own roles select" ON public.user_roles FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role)
@@ -34,7 +57,8 @@ RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
   SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = _role)
 $$;
 
-CREATE TABLE public.products (
+-- ---------- products ----------
+CREATE TABLE IF NOT EXISTS public.products (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   name text NOT NULL,
@@ -53,9 +77,12 @@ CREATE TABLE public.products (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.products TO authenticated;
 GRANT ALL ON public.products TO service_role;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own products" ON public.products;
 CREATE POLICY "own products" ON public.products FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.customers (
+-- ---------- customers ----------
+CREATE TABLE IF NOT EXISTS public.customers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   name text NOT NULL,
@@ -71,9 +98,12 @@ CREATE TABLE public.customers (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.customers TO authenticated;
 GRANT ALL ON public.customers TO service_role;
 ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own customers" ON public.customers;
 CREATE POLICY "own customers" ON public.customers FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.orders (
+-- ---------- orders ----------
+CREATE TABLE IF NOT EXISTS public.orders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   order_no integer NOT NULL DEFAULT 0,
@@ -104,6 +134,8 @@ CREATE TABLE public.orders (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.orders TO authenticated;
 GRANT ALL ON public.orders TO service_role;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own orders" ON public.orders;
 CREATE POLICY "own orders" ON public.orders FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
 CREATE OR REPLACE FUNCTION public.set_order_no()
@@ -115,6 +147,7 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+DROP TRIGGER IF EXISTS orders_set_order_no ON public.orders;
 CREATE TRIGGER orders_set_order_no BEFORE INSERT ON public.orders
 FOR EACH ROW EXECUTE FUNCTION public.set_order_no();
 
@@ -122,10 +155,12 @@ CREATE OR REPLACE FUNCTION public.touch_updated_at()
 RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END;
 $$;
+DROP TRIGGER IF EXISTS orders_touch ON public.orders;
 CREATE TRIGGER orders_touch BEFORE UPDATE ON public.orders
 FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
-CREATE TABLE public.order_items (
+-- ---------- order_items ----------
+CREATE TABLE IF NOT EXISTS public.order_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
@@ -141,9 +176,12 @@ CREATE TABLE public.order_items (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.order_items TO authenticated;
 GRANT ALL ON public.order_items TO service_role;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own order items" ON public.order_items;
 CREATE POLICY "own order items" ON public.order_items FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.shop_settings (
+-- ---------- shop_settings ----------
+CREATE TABLE IF NOT EXISTS public.shop_settings (
   user_id uuid PRIMARY KEY,
   company_name text NOT NULL DEFAULT 'My Shop',
   tagline text,
@@ -160,9 +198,12 @@ CREATE TABLE public.shop_settings (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.shop_settings TO authenticated;
 GRANT ALL ON public.shop_settings TO service_role;
 ALTER TABLE public.shop_settings ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own shop settings" ON public.shop_settings;
 CREATE POLICY "own shop settings" ON public.shop_settings FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.courier_accounts (
+-- ---------- courier_accounts ----------
+CREATE TABLE IF NOT EXISTS public.courier_accounts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   provider text NOT NULL DEFAULT 'steadfast',
@@ -176,9 +217,12 @@ CREATE TABLE public.courier_accounts (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.courier_accounts TO authenticated;
 GRANT ALL ON public.courier_accounts TO service_role;
 ALTER TABLE public.courier_accounts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own courier accounts" ON public.courier_accounts;
 CREATE POLICY "own courier accounts" ON public.courier_accounts FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.courier_events (
+-- ---------- courier_events ----------
+CREATE TABLE IF NOT EXISTS public.courier_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
@@ -191,9 +235,12 @@ CREATE TABLE public.courier_events (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.courier_events TO authenticated;
 GRANT ALL ON public.courier_events TO service_role;
 ALTER TABLE public.courier_events ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own courier events" ON public.courier_events;
 CREATE POLICY "own courier events" ON public.courier_events FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.daily_entries (
+-- ---------- daily_entries ----------
+CREATE TABLE IF NOT EXISTS public.daily_entries (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   entry_date date NOT NULL DEFAULT current_date,
@@ -212,9 +259,12 @@ CREATE TABLE public.daily_entries (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.daily_entries TO authenticated;
 GRANT ALL ON public.daily_entries TO service_role;
 ALTER TABLE public.daily_entries ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own daily entries" ON public.daily_entries;
 CREATE POLICY "own daily entries" ON public.daily_entries FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.ad_spends (
+-- ---------- ad_spends ----------
+CREATE TABLE IF NOT EXISTS public.ad_spends (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   platform text NOT NULL DEFAULT 'facebook',
@@ -226,9 +276,12 @@ CREATE TABLE public.ad_spends (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.ad_spends TO authenticated;
 GRANT ALL ON public.ad_spends TO service_role;
 ALTER TABLE public.ad_spends ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own ad spends" ON public.ad_spends;
 CREATE POLICY "own ad spends" ON public.ad_spends FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.expenses (
+-- ---------- expenses ----------
+CREATE TABLE IF NOT EXISTS public.expenses (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   category text NOT NULL DEFAULT 'other',
@@ -240,9 +293,12 @@ CREATE TABLE public.expenses (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.expenses TO authenticated;
 GRANT ALL ON public.expenses TO service_role;
 ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own expenses" ON public.expenses;
 CREATE POLICY "own expenses" ON public.expenses FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.parcel_returns (
+-- ---------- parcel_returns ----------
+CREATE TABLE IF NOT EXISTS public.parcel_returns (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   sent_date date NOT NULL,
@@ -256,9 +312,12 @@ CREATE TABLE public.parcel_returns (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.parcel_returns TO authenticated;
 GRANT ALL ON public.parcel_returns TO service_role;
 ALTER TABLE public.parcel_returns ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own parcel returns" ON public.parcel_returns;
 CREATE POLICY "own parcel returns" ON public.parcel_returns FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.stock_movements (
+-- ---------- stock_movements ----------
+CREATE TABLE IF NOT EXISTS public.stock_movements (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   product_id uuid NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
@@ -270,9 +329,12 @@ CREATE TABLE public.stock_movements (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.stock_movements TO authenticated;
 GRANT ALL ON public.stock_movements TO service_role;
 ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own stock movements" ON public.stock_movements;
 CREATE POLICY "own stock movements" ON public.stock_movements FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
-CREATE TABLE public.email_log (
+-- ---------- email_log ----------
+CREATE TABLE IF NOT EXISTS public.email_log (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   customer_id uuid REFERENCES public.customers(id) ON DELETE SET NULL,
@@ -287,4 +349,6 @@ CREATE TABLE public.email_log (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.email_log TO authenticated;
 GRANT ALL ON public.email_log TO service_role;
 ALTER TABLE public.email_log ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own email log" ON public.email_log;
 CREATE POLICY "own email log" ON public.email_log FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
