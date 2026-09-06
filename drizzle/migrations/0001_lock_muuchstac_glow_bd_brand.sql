@@ -1,0 +1,1 @@
+ALTER TABLE public.shop_settings ALTER COLUMN company_name SET DEFAULT 'Muuchstac Glow BD';
