@@ -32,6 +32,8 @@ export const Route = createFileRoute("/_authenticated/orders/$id")({
     search["invoice"] === true || search["invoice"] === "true" ? { invoice: true } : {},
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Order details & invoice — Muuchstac Glow BD" },
       {
         name: "description",

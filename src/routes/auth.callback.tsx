@@ -6,6 +6,8 @@ import { REDIRECT_STORAGE_KEY } from "@/lib/site-url";
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Signing you in — Muuchstac Glow BD Control Panel" },
       {
         name: "description",

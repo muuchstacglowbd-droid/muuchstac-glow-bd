@@ -27,6 +27,8 @@ import { BRAND_NAME } from "@/lib/brand";
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Get started — Muuchstac Glow BD Control Panel" },
       {
         name: "description",

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BRAND_NAME } from "@/lib/brand";
 
 export const ONBOARDING_STEPS = 5;
 
@@ -26,11 +27,20 @@ export function useProfile() {
         .eq("id", user.id)
         .maybeSingle();
       if (error) throw error;
-      if (data) return data as OnboardingProfile;
+      if (data) {
+        if (data.shop_name !== BRAND_NAME) {
+          const { error: brandError } = await supabase
+            .from("profiles")
+            .update({ shop_name: BRAND_NAME })
+            .eq("id", user.id);
+          if (brandError) throw brandError;
+        }
+        return { ...data, shop_name: BRAND_NAME } as OnboardingProfile;
+      }
 
       const { data: created, error: insertError } = await supabase
         .from("profiles")
-        .insert({ id: user.id })
+        .insert({ id: user.id, shop_name: BRAND_NAME })
         .select("id, full_name, shop_name, onboarding_step, onboarding_done")
         .single();
       if (insertError) throw insertError;
@@ -47,7 +57,7 @@ export function useUpdateProfile() {
       if (!user) throw new Error("Not signed in");
       const { error } = await supabase
         .from("profiles")
-        .upsert({ id: user.id, ...patch })
+        .upsert({ id: user.id, ...patch, shop_name: BRAND_NAME })
         .eq("id", user.id);
       if (error) throw error;
     },

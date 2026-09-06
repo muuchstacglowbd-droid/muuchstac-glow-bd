@@ -30,6 +30,8 @@ import {
 export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Stock & Income Report — Muuchstac Glow BD" },
       {
         name: "description",

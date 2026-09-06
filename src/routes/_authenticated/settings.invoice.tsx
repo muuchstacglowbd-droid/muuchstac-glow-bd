@@ -12,6 +12,8 @@ import { BRAND_LOGO_URL, BRAND_NAME } from "@/lib/brand";
 export const Route = createFileRoute("/_authenticated/settings/invoice")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: `Invoice & delivery settings — ${BRAND_NAME}` },
       {
         name: "description",

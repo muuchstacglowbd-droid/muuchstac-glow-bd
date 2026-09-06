@@ -29,6 +29,8 @@ import { downloadCsv } from "@/lib/csv";
 export const Route = createFileRoute("/_authenticated/expenses")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Expenses — Muuchstac Glow BD Control Panel" },
       {
         name: "description",

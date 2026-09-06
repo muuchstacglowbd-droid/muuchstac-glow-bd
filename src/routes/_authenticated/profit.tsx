@@ -52,6 +52,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/profit")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Daily Profit & Returns — Muuchstac Glow BD" },
       {
         name: "description",

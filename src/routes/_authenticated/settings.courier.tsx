@@ -21,6 +21,8 @@ import { siteUrl, siteUrlPath, stableSiteUrl } from "@/lib/site-url";
 export const Route = createFileRoute("/_authenticated/settings/courier")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Courier settings — Muuchstac Glow BD" },
       {
         name: "description",

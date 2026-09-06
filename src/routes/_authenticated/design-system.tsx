@@ -9,6 +9,8 @@ import { EmptyState, Eyebrow, Grid, Panel, Pill, Section, Stack, StatTile } from
 export const Route = createFileRoute("/_authenticated/design-system")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Design system — Muuchstac Glow BD Control Panel" },
       {
         name: "description",

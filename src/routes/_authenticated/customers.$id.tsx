@@ -10,6 +10,8 @@ import { currency, orderTotals, statusTone, countsRevenue, type Order } from "@/
 export const Route = createFileRoute("/_authenticated/customers/$id")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Customer profile — Muuchstac Glow BD Control Panel" },
       {
         name: "description",

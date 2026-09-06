@@ -23,6 +23,8 @@ import {
 export const Route = createFileRoute("/_authenticated/products/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Products & Inventory — Muuchstac Glow BD" },
       {
         name: "description",

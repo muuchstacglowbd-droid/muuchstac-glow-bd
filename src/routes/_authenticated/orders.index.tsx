@@ -61,6 +61,8 @@ export const Route = createFileRoute("/_authenticated/orders/")({
 
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Orders — Muuchstac Glow BD Control Panel" },
       {
         name: "description",
