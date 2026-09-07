@@ -63,6 +63,15 @@ export interface Customer {
   created_at: string;
 }
 
+export interface TeamMember {
+  id: string;
+  name: string;
+  phone: string | null;
+  member_code: string | null;
+  active: boolean;
+  created_at: string;
+}
+
 export type DeliveryZone = "inside_dhaka" | "outside_dhaka" | "free";
 
 export const DELIVERY_ZONES: { value: DeliveryZone; label: string }[] = [
@@ -110,6 +119,8 @@ export interface Order {
   customer_name: string | null;
   customer_phone: string | null;
   customer_address: string | null;
+  team_member_id?: string | null;
+  team_member_name?: string | null;
   status: OrderStatus;
   source: OrderSource;
   discount: number;

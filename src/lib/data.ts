@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { orderTotals } from "./shop";
-import type { Customer, Order, Product, ShopSettings } from "./shop";
+import type { Customer, Order, Product, ShopSettings, TeamMember } from "./shop";
 import { BRAND_LOGO_URL, BRAND_NAME } from "./brand";
 
 const db = () =>
@@ -42,6 +42,65 @@ export function useCustomers() {
       return data ?? [];
     },
   });
+}
+
+export function useTeamMembers() {
+  return useQuery({
+    queryKey: ["team_members"],
+    queryFn: async (): Promise<TeamMember[]> => {
+      const { data, error } = await db()
+        .from("team_members")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+/** Next free "TM-001" style code, based on the highest TM-### code already in use. */
+function nextMemberCode(existing: { member_code: string | null }[]): string {
+  let max = 0;
+  for (const m of existing) {
+    const match = /^TM-(\d+)$/i.exec((m.member_code ?? "").trim());
+    if (match) max = Math.max(max, parseInt(match[1], 10));
+  }
+  return `TM-${String(max + 1).padStart(3, "0")}`;
+}
+
+/**
+ * Creates a team member. When no member_code is given, auto-generates the
+ * next "TM-001" style code — the person can still rename it later since it's
+ * a plain editable text field.
+ */
+export async function createTeamMember(input: {
+  name: string;
+  phone?: string | null;
+  member_code?: string | null;
+}) {
+  const user_id = await uid();
+  const name = input.name.trim();
+  if (!name) throw new Error("Team member needs a name");
+
+  const { data: existing, error: existingErr } = await db()
+    .from("team_members")
+    .select("member_code");
+  if (existingErr) throw existingErr;
+
+  const member_code = input.member_code?.trim() || nextMemberCode(existing ?? []);
+
+  const { data, error } = await db()
+    .from("team_members")
+    .insert({
+      user_id,
+      name,
+      phone: input.phone?.trim() || null,
+      member_code,
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id as string;
 }
 
 export function useOrders() {

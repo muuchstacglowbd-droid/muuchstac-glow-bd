@@ -5,13 +5,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, Eye, Plus, Search, Trash2, X } from "lucide-react";
+import { Download, Eye, Plus, Search, Trash2, Users, X } from "lucide-react";
 import { downloadCsv } from "@/lib/csv";
 import { Shimmer } from "@/components/ds/skeletons";
 import { AppShell } from "@/components/AppShell";
 import { CourierCell, RefreshAllCourierButton } from "@/components/CourierCell";
 import {
   createOrder,
+  createTeamMember,
   ensureCustomer,
   markOrderShipped,
   markOrderCancelled,
@@ -22,6 +23,7 @@ import {
   useCustomers,
   useOrders,
   useProducts,
+  useTeamMembers,
   useTableMutation,
 } from "@/lib/data";
 import {
@@ -35,9 +37,12 @@ import {
   type Order,
   type OrderSource,
   type OrderStatus,
+  type TeamMember,
 } from "@/lib/shop";
+import { parseCustomerPaste } from "@/lib/customer-paste";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -93,30 +98,41 @@ function OrdersPage() {
   const { data: orders = [], isLoading } = useOrders();
   const { data: products = [] } = useProducts();
   const { data: customers = [] } = useCustomers();
+  const { data: teamMembers = [] } = useTeamMembers();
   const { data: shopSettings } = useShopSettings();
   const qc = useQueryClient();
   const autoSend = useServerFn(autoSendOrderToCourier);
   const navigate = useNavigate();
   const orderMutation = useTableMutation("orders", ["orders", "products"]);
+  const teamMutation = useTableMutation("team_members", ["team_members"]);
 
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<OrderStatus | "all">("all");
   const [source, setSource] = useState<OrderSource | "all">("all");
+  const [teamFilter, setTeamFilter] = useState<string>("all");
 
   const { new: openNew } = Route.useSearch();
   const [open, setOpen] = useState(!!openNew);
   const [saving, setSaving] = useState(false);
 
+  const [customerPaste, setCustomerPaste] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [newSource, setNewSource] = useState<OrderSource>("facebook");
+  const [selectedTeamMemberId, setSelectedTeamMemberId] = useState<string>("");
   const [discount, setDiscount] = useState(0);
   const [zone, setZone] = useState<DeliveryZone>("inside_dhaka");
   const [shipping, setShipping] = useState(0);
   const [items, setItems] = useState<Draft[]>([]);
   const [customerSaved, setCustomerSaved] = useState(false);
   const [savingCustomer, setSavingCustomer] = useState(false);
+
+  const [teamOpen, setTeamOpen] = useState(false);
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberPhone, setNewMemberPhone] = useState("");
+  const [newMemberCode, setNewMemberCode] = useState("");
+  const [savingMember, setSavingMember] = useState(false);
 
   const insideCharge = Number(shopSettings?.inside_dhaka_charge ?? 70);
   const outsideCharge = Number(shopSettings?.outside_dhaka_charge ?? 130);
@@ -131,23 +147,42 @@ function OrdersPage() {
     setShipping(chargeFor(z));
   }
 
-  /** Save the customer box: store the details and auto-fill the rest of the order. */
+  /**
+   * Save the customer box: if a message was pasted in, parse the name,
+   * mobile number and address out of it first (converting the mobile
+   * number to English digits when the customer typed it in Bangla), then
+   * store the details and auto-fill the rest of the order.
+   */
   async function saveCustomer() {
-    if (!customerName.trim() && !customerPhone.trim()) {
+    let nameInput = customerName;
+    let phoneInput = customerPhone;
+    let addressInput = customerAddress;
+
+    if (customerPaste.trim()) {
+      const parsed = parseCustomerPaste(customerPaste);
+      nameInput = parsed.name || nameInput;
+      phoneInput = parsed.phone || phoneInput;
+      addressInput = parsed.address || addressInput;
+      setCustomerName(nameInput);
+      setCustomerPhone(phoneInput);
+      setCustomerAddress(addressInput);
+    }
+
+    if (!nameInput.trim() && !phoneInput.trim()) {
       toast.error("Add a name or a mobile number first.");
       return;
     }
     setSavingCustomer(true);
     try {
-      const existing = await findCustomer({ phone: customerPhone, name: customerName });
+      const existing = await findCustomer({ phone: phoneInput, name: nameInput });
       await ensureCustomer({
-        name: customerName,
-        phone: customerPhone,
-        address: customerAddress,
+        name: nameInput,
+        phone: phoneInput,
+        address: addressInput,
       });
-      const name = customerName || existing?.name || "";
-      const phone = customerPhone || existing?.phone || "";
-      const address = customerAddress || existing?.address || "";
+      const name = nameInput || existing?.name || "";
+      const phone = phoneInput || existing?.phone || "";
+      const address = addressInput || existing?.address || "";
       setCustomerName(name);
       setCustomerPhone(phone);
       setCustomerAddress(address);
@@ -158,6 +193,7 @@ function OrdersPage() {
           : zone;
       pickZone(guessedZone);
       setCustomerSaved(true);
+      setCustomerPaste("");
       await qc.invalidateQueries({ queryKey: ["customers"] });
       toast.success(
         existing ? "Customer found — details filled in" : "Customer saved — details filled in",
@@ -168,6 +204,60 @@ function OrdersPage() {
       setSavingCustomer(false);
     }
   }
+
+  /** Auto-generates a code (e.g. TM-004) when the code field is left blank. */
+  async function addTeamMember() {
+    if (!newMemberName.trim()) {
+      toast.error("Add a name for the team member.");
+      return;
+    }
+    setSavingMember(true);
+    try {
+      await createTeamMember({
+        name: newMemberName,
+        phone: newMemberPhone,
+        member_code: newMemberCode,
+      });
+      setNewMemberName("");
+      setNewMemberPhone("");
+      setNewMemberCode("");
+      await qc.invalidateQueries({ queryKey: ["team_members"] });
+      toast.success("Team member added");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not add the team member");
+    } finally {
+      setSavingMember(false);
+    }
+  }
+
+  function removeTeamMember(member: TeamMember) {
+    if (!confirm(`Remove ${member.name} from the team? Their past orders stay as they are.`))
+      return;
+    teamMutation.mutate(
+      { action: "delete", id: member.id },
+      {
+        onSuccess: () => {
+          toast.success("Team member removed");
+          if (selectedTeamMemberId === member.id) setSelectedTeamMemberId("");
+          if (teamFilter === member.id) setTeamFilter("all");
+        },
+        onError: (e) => toast.error(e instanceof Error ? e.message : "Could not remove"),
+      },
+    );
+  }
+
+  /** How many orders (and how much revenue) each team member has booked so far. */
+  const teamStats = useMemo(() => {
+    const stats = new Map<string, { count: number; total: number }>();
+    for (const o of orders) {
+      const id = (o as Order).team_member_id;
+      if (!id) continue;
+      const t = orderTotals(o as Order);
+      const prev = stats.get(id) ?? { count: 0, total: 0 };
+      stats.set(id, { count: prev.count + 1, total: prev.total + t.total });
+    }
+    return stats;
+  }, [orders]);
 
   useEffect(() => {
     if (zone === "free") return;
@@ -180,6 +270,7 @@ function OrdersPage() {
     return orders.filter((o) => {
       if (status !== "all" && o.status !== status) return false;
       if (source !== "all" && o.source !== source) return false;
+      if (teamFilter !== "all" && (o as Order).team_member_id !== teamFilter) return false;
       if (!term) return true;
       return (
         String(o.order_no).includes(term) ||
@@ -188,7 +279,7 @@ function OrdersPage() {
         (o.tracking_code ?? "").toLowerCase().includes(term)
       );
     });
-  }, [orders, q, status, source]);
+  }, [orders, q, status, source, teamFilter]);
 
   const summary = useMemo(() => {
     let value = 0;
@@ -219,10 +310,12 @@ function OrdersPage() {
   }
 
   function resetForm() {
+    setCustomerPaste("");
     setCustomerName("");
     setCustomerPhone("");
     setCustomerAddress("");
     setNewSource("facebook");
+    setSelectedTeamMemberId("");
     setDiscount(0);
     setZone("inside_dhaka");
     setShipping(chargeFor("inside_dhaka"));
@@ -245,12 +338,15 @@ function OrdersPage() {
         phone: customerPhone,
         address: customerAddress,
       });
+      const teamMember = teamMembers.find((m) => m.id === selectedTeamMemberId) ?? null;
       const id = await createOrder({
         order: {
           customer_id: customerId,
           customer_name: customerName || null,
           customer_phone: customerPhone || null,
           customer_address: customerAddress || null,
+          team_member_id: teamMember?.id ?? null,
+          team_member_name: teamMember?.name ?? null,
           source: newSource,
           discount,
           delivery_zone: zone,
@@ -359,6 +455,7 @@ function OrdersPage() {
                     date: new Date(o.created_at).toLocaleDateString(),
                     customer: o.customer_name ?? "",
                     phone: o.customer_phone ?? "",
+                    team_member: (o as Order).team_member_name ?? "",
                     status: o.status,
                     source: o.source,
                     tracking: o.tracking_code ?? "",
@@ -370,6 +467,9 @@ function OrdersPage() {
             }
           >
             <Download className="size-4" /> Export
+          </Button>
+          <Button variant="outline" onClick={() => setTeamOpen(true)}>
+            <Users className="size-4" /> Team
           </Button>
           <Button onClick={() => setOpen(true)}>
             <Plus className="size-4" /> New order
@@ -422,13 +522,30 @@ function OrdersPage() {
             </SelectContent>
           </Select>
         </div>
-        {(q || status !== "all" || source !== "all") && (
+        <div className="w-full sm:w-44">
+          <Label className="text-xs text-muted-foreground">Team member</Label>
+          <Select value={teamFilter} onValueChange={setTeamFilter}>
+            <SelectTrigger className="mt-1 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All team members</SelectItem>
+              {teamMembers.map((m) => (
+                <SelectItem key={m.id} value={m.id}>
+                  {m.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {(q || status !== "all" || source !== "all" || teamFilter !== "all") && (
           <Button
             variant="ghost"
             onClick={() => {
               setQ("");
               setStatus("all");
               setSource("all");
+              setTeamFilter("all");
             }}
           >
             <X className="size-4" /> Clear
@@ -473,6 +590,7 @@ function OrdersPage() {
                     )}
                     <p className="num mt-0.5 text-[0.7rem] uppercase tracking-wide text-muted-foreground">
                       #{o.order_no} · {o.source}
+                      {(o as Order).team_member_name ? ` · ${(o as Order).team_member_name}` : ""}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">
@@ -543,6 +661,9 @@ function OrdersPage() {
                   Source
                 </th>
                 <th scope="col" className="px-4 py-2.5 font-medium">
+                  Team
+                </th>
+                <th scope="col" className="px-4 py-2.5 font-medium">
                   Status
                 </th>
                 <th scope="col" className="px-4 py-2.5 font-medium">
@@ -563,7 +684,7 @@ function OrdersPage() {
               {isLoading &&
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="border-t border-border/70">
-                    {Array.from({ length: 8 }).map((__, c) => (
+                    {Array.from({ length: 9 }).map((__, c) => (
                       <td key={c} className="px-4 py-3">
                         <Shimmer className="h-3.5 w-full" />
                       </td>
@@ -572,7 +693,7 @@ function OrdersPage() {
                 ))}
               {!isLoading && filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-14 text-center">
+                  <td colSpan={9} className="px-4 py-14 text-center">
                     <p className="text-title font-semibold">No orders match these filters</p>
                     <p className="mt-1 text-caption text-muted-foreground">
                       Try a different status, date or search word — or create a new order.
@@ -598,6 +719,9 @@ function OrdersPage() {
                       )}
                     </td>
                     <td className="px-4 py-2.5 capitalize text-muted-foreground">{o.source}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground">
+                      {(o as Order).team_member_name || "—"}
+                    </td>
                     <td className="px-4 py-2.5">
                       <Select
                         value={o.status}
@@ -669,6 +793,25 @@ function OrdersPage() {
                 </span>
               )}
             </div>
+
+            <div className="mt-3">
+              <Label>Paste customer message (optional)</Label>
+              <Textarea
+                value={customerPaste}
+                onChange={(e) => setCustomerPaste(e.target.value)}
+                placeholder={
+                  "কাস্টমারের নাম, মোবাইল নাম্বার ও ঠিকানা এখানে paste করুন, যেমন—\nরহিম উদ্দিন\n০১৭xxxxxxxx\nমিরপুর, ঢাকা"
+                }
+                rows={3}
+                className="mt-1"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Save customer চাপ দিলে এখান থেকে নাম, মোবাইল ও ঠিকানা নিচের ঘরগুলোতে
+                automatic বসে যাবে। বাংলা সংখ্যায় লেখা মোবাইল নাম্বার ইংরেজি সংখ্যায় convert
+                হয়ে যাবে।
+              </p>
+            </div>
+
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <div>
                 <Label>Customer name</Label>
@@ -730,6 +873,26 @@ function OrdersPage() {
                   {ORDER_SOURCES.map((s) => (
                     <SelectItem key={s} value={s} className="capitalize">
                       {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Team member</Label>
+              <Select
+                value={selectedTeamMemberId || "none"}
+                onValueChange={(v) => setSelectedTeamMemberId(v === "none" ? "" : v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Not assigned" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Not assigned</SelectItem>
+                  {teamMembers.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.name}
+                      {m.member_code ? ` (${m.member_code})` : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -859,6 +1022,100 @@ function OrdersPage() {
             </Button>
             <Button onClick={saveOrder} disabled={saving}>
               {saving ? "Saving…" : "Create order"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={teamOpen} onOpenChange={setTeamOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Team work</DialogTitle>
+          </DialogHeader>
+
+          <div className="rounded-xl border border-border bg-muted/40 p-4">
+            <h3 className="font-medium">Add team member</h3>
+            <p className="text-xs text-muted-foreground">
+              Name and mobile are enough — the ID fills itself in (e.g. TM-004), but you can
+              type your own instead.
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <div>
+                <Label>Name</Label>
+                <Input
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  placeholder="e.g. Rahim"
+                />
+              </div>
+              <div>
+                <Label>Mobile number</Label>
+                <Input
+                  value={newMemberPhone}
+                  onChange={(e) => setNewMemberPhone(e.target.value)}
+                  placeholder="01XXXXXXXXX"
+                />
+              </div>
+              <div>
+                <Label>Member ID</Label>
+                <Input
+                  value={newMemberCode}
+                  onChange={(e) => setNewMemberCode(e.target.value)}
+                  placeholder="Auto — or type your own"
+                />
+              </div>
+            </div>
+            <Button className="mt-3" variant="secondary" onClick={addTeamMember} disabled={savingMember}>
+              {savingMember ? "Adding…" : "Add team member"}
+            </Button>
+          </div>
+
+          <div className="mt-2 space-y-2">
+            {teamMembers.length === 0 && (
+              <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
+                No team members yet — add one above.
+              </p>
+            )}
+            {teamMembers.map((m) => {
+              const stats = teamStats.get(m.id);
+              return (
+                <div
+                  key={m.id}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium">
+                      {m.name}
+                      {m.member_code && (
+                        <span className="num ml-2 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                          {m.member_code}
+                        </span>
+                      )}
+                    </p>
+                    {m.phone && <p className="num text-xs text-muted-foreground">{m.phone}</p>}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right text-xs text-muted-foreground">
+                      <p className="num">{stats?.count ?? 0} orders</p>
+                      <p className="num">{currency(stats?.total ?? 0)}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Remove ${m.name}`}
+                      onClick={() => removeTeamMember(m)}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTeamOpen(false)}>
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
