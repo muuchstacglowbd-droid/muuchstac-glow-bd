@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,17 +104,23 @@ function AuthPage() {
   async function google() {
     setBusy(true);
     rememberDestination();
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: siteUrlPath(AUTH_CALLBACK_PATH),
+    // Sign in directly through Supabase's own Google provider. (The old
+    // "/~oauth/initiate" broker only exists on Lovable's own hosting — on a
+    // self-hosted domain that path 404s, which is why Google sign-in was
+    // broken here.) Google must be enabled for this Supabase project under
+    // Authentication → Providers, with this domain's /auth/callback added to
+    // the Redirect URLs.
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: siteUrlPath(AUTH_CALLBACK_PATH) },
     });
-    if (result.error) {
+    if (error) {
       setBusy(false);
       toast.error("Google sign-in failed. Please try again.");
       return;
     }
-    if (result.redirected) return;
-    // session is set by the helper; the effect above handles the redirect
-    setBusy(false);
+    // Supabase immediately redirects the browser to Google; there is nothing
+    // left to do here on success.
   }
 
   return (
@@ -126,6 +131,10 @@ function AuthPage() {
             src={BRAND_LOGO_URL}
             alt={`${BRAND_NAME} logo`}
             className="size-14 rounded-lg object-cover shadow-lg"
+            onError={(e) => {
+              // Hide the broken-image box instead of showing wrapped alt text
+              e.currentTarget.style.display = "none";
+            }}
           />
           <span className="font-display text-2xl font-bold">{BRAND_NAME}</span>
         </div>
