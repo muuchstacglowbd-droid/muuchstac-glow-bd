@@ -54,7 +54,7 @@ function AuthPage() {
   useEffect(() => setReady(true), []);
   const disabled = busy || !ready;
 
-  // As soon as a session exists (password, Google or an already-open session),
+  // As soon as a session exists (password sign-in or an already-open session),
   // refresh the router so the protected gate sees it, then leave the sign-in page.
   useEffect(() => {
     if (!user) return;
@@ -101,28 +101,6 @@ function AuthPage() {
     }
   }
 
-  async function google() {
-    setBusy(true);
-    rememberDestination();
-    // Sign in directly through Supabase's own Google provider. (The old
-    // "/~oauth/initiate" broker only exists on Lovable's own hosting — on a
-    // self-hosted domain that path 404s, which is why Google sign-in was
-    // broken here.) Google must be enabled for this Supabase project under
-    // Authentication → Providers, with this domain's /auth/callback added to
-    // the Redirect URLs.
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: siteUrlPath(AUTH_CALLBACK_PATH) },
-    });
-    if (error) {
-      setBusy(false);
-      toast.error("Google sign-in failed. Please try again.");
-      return;
-    }
-    // Supabase immediately redirects the browser to Google; there is nothing
-    // left to do here on success.
-  }
-
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden flex-col justify-between rose-gradient p-12 lg:flex">
@@ -163,21 +141,7 @@ function AuthPage() {
               : "Set up your shop control panel in seconds."}
           </p>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="mt-6 w-full"
-            disabled={disabled}
-            onClick={google}
-          >
-            Continue with Google
-          </Button>
-
-          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <form onSubmit={submit} className="space-y-4">
+          <form onSubmit={submit} className="mt-6 space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
