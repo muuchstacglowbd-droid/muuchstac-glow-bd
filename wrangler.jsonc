@@ -5,5 +5,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    "SUPABASE_URL": "https://vepnmturmfocmafpdntm.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5tdHVybWZvY21hZnBkbnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3MTkxMTAsImV4cCI6MjEwNDI5NTExMH0.G_ghvMMilnzCCmtq-HriXsZSzhYK8EjFi2iZ1ZKGNO0"
   }
 }
