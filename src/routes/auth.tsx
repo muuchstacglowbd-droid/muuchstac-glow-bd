@@ -95,7 +95,14 @@ function AuthPage() {
         if (error) throw error;
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong");
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      if (/invalid api key/i.test(message)) {
+        toast.error(
+          "Invalid API key — Supabase configuration on this deployment looks wrong. Open /debug-env on this site to see what's misconfigured.",
+        );
+      } else {
+        toast.error(message);
+      }
     } finally {
       setBusy(false);
     }

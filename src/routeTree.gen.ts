@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DebugEnvRouteImport } from './routes/debug-env'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedDailyReportRouteImport } from './routes/_authenticated/daily-report'
@@ -31,6 +32,7 @@ import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsCourierRouteImport } from './routes/_authenticated/settings.courier'
 import { Route as AuthenticatedSettingsInvoiceRouteImport } from './routes/_authenticated/settings.invoice'
 import { Route as ApiPublicCourierWebhookRouteImport } from './routes/api/public/courier-webhook'
+import { Route as ApiPublicEnvCheckRouteImport } from './routes/api/public/env-check'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -39,6 +41,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebugEnvRoute = DebugEnvRouteImport.update({
+  id: '/debug-env',
+  path: '/debug-env',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -149,10 +156,16 @@ const ApiPublicCourierWebhookRoute = ApiPublicCourierWebhookRouteImport.update({
   path: '/api/public/courier-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEnvCheckRoute = ApiPublicEnvCheckRouteImport.update({
+  id: '/api/public/env-check',
+  path: '/api/public/env-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/debug-env': typeof DebugEnvRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/daily-report': typeof AuthenticatedDailyReportRoute
   '/design-system': typeof AuthenticatedDesignSystemRoute
@@ -169,12 +182,14 @@ export interface FileRoutesByFullPath {
   '/settings/courier': typeof AuthenticatedSettingsCourierRoute
   '/settings/invoice': typeof AuthenticatedSettingsInvoiceRoute
   '/api/public/courier-webhook': typeof ApiPublicCourierWebhookRoute
+  '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/customers/': typeof AuthenticatedCustomersIndexRoute
   '/orders/': typeof AuthenticatedOrdersIndexRoute
   '/products/': typeof AuthenticatedProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
+  '/debug-env': typeof DebugEnvRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/daily-report': typeof AuthenticatedDailyReportRoute
   '/design-system': typeof AuthenticatedDesignSystemRoute
@@ -192,6 +207,7 @@ export interface FileRoutesByTo {
   '/settings/courier': typeof AuthenticatedSettingsCourierRoute
   '/settings/invoice': typeof AuthenticatedSettingsInvoiceRoute
   '/api/public/courier-webhook': typeof ApiPublicCourierWebhookRoute
+  '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/customers': typeof AuthenticatedCustomersIndexRoute
   '/orders': typeof AuthenticatedOrdersIndexRoute
   '/products': typeof AuthenticatedProductsIndexRoute
@@ -200,6 +216,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/debug-env': typeof DebugEnvRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/daily-report': typeof AuthenticatedDailyReportRoute
   '/_authenticated/design-system': typeof AuthenticatedDesignSystemRoute
@@ -217,6 +234,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/courier': typeof AuthenticatedSettingsCourierRoute
   '/_authenticated/settings/invoice': typeof AuthenticatedSettingsInvoiceRoute
   '/api/public/courier-webhook': typeof ApiPublicCourierWebhookRoute
+  '/api/public/env-check': typeof ApiPublicEnvCheckRoute
   '/_authenticated/customers/': typeof AuthenticatedCustomersIndexRoute
   '/_authenticated/orders/': typeof AuthenticatedOrdersIndexRoute
   '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
@@ -226,6 +244,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/debug-env'
     | '/analytics'
     | '/daily-report'
     | '/design-system'
@@ -242,12 +261,14 @@ export interface FileRouteTypes {
     | '/settings/courier'
     | '/settings/invoice'
     | '/api/public/courier-webhook'
+    | '/api/public/env-check'
     | '/customers/'
     | '/orders/'
     | '/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/debug-env'
     | '/analytics'
     | '/daily-report'
     | '/design-system'
@@ -265,6 +286,7 @@ export interface FileRouteTypes {
     | '/settings/courier'
     | '/settings/invoice'
     | '/api/public/courier-webhook'
+    | '/api/public/env-check'
     | '/customers'
     | '/orders'
     | '/products'
@@ -272,6 +294,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/debug-env'
     | '/_authenticated/analytics'
     | '/_authenticated/daily-report'
     | '/_authenticated/design-system'
@@ -289,6 +312,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/courier'
     | '/_authenticated/settings/invoice'
     | '/api/public/courier-webhook'
+    | '/api/public/env-check'
     | '/_authenticated/customers/'
     | '/_authenticated/orders/'
     | '/_authenticated/products/'
@@ -297,7 +321,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  DebugEnvRoute: typeof DebugEnvRoute
   ApiPublicCourierWebhookRoute: typeof ApiPublicCourierWebhookRoute
+  ApiPublicEnvCheckRoute: typeof ApiPublicEnvCheckRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -314,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debug-env': {
+      id: '/debug-env'
+      path: '/debug-env'
+      fullPath: '/debug-env'
+      preLoaderRoute: typeof DebugEnvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -456,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCourierWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/env-check': {
+      id: '/api/public/env-check'
+      path: '/api/public/env-check'
+      fullPath: '/api/public/env-check'
+      preLoaderRoute: typeof ApiPublicEnvCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -517,7 +557,9 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  DebugEnvRoute: DebugEnvRoute,
   ApiPublicCourierWebhookRoute: ApiPublicCourierWebhookRoute,
+  ApiPublicEnvCheckRoute: ApiPublicEnvCheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
