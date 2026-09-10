@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
@@ -107,13 +108,16 @@ export function AppShell({
       <div className="mb-6 flex items-center justify-between px-1">
         <Link
           to="/"
-          className="flex min-w-0 items-center gap-3 rounded-xl"
+          className="group flex min-w-0 items-center gap-3 rounded-xl"
           aria-label={`${BRAND_NAME} control panel home`}
         >
-          <img
+          <motion.img
             src={BRAND_LOGO_URL}
             alt={`${BRAND_NAME} logo`}
             className="size-11 shrink-0 rounded-lg object-cover shadow-lg"
+            whileHover={{ scale: 1.08, rotate: -4 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
           />
           <span className="leading-tight">
             <span className="block font-display text-base font-bold">{BRAND_NAME}</span>
@@ -146,20 +150,32 @@ export function AppShell({
                 onClick={() => setOpen(false)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
+                  "group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5 text-sm transition-colors duration-200",
                   active
-                    ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground shadow-sm"
+                    ? "font-semibold text-sidebar-accent-foreground"
                     : "text-sidebar-foreground/60 hover:translate-x-0.5 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
                 )}
               >
+                {active && (
+                  <motion.span
+                    layoutId="sidebar-active-pill"
+                    className="absolute inset-0 rounded-xl bg-sidebar-accent shadow-sm"
+                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                  />
+                )}
                 <span
                   className={cn(
-                    "absolute left-0 h-6 w-[3px] rounded-r-full bg-sidebar-primary transition-opacity",
+                    "absolute left-0 z-10 h-6 w-[3px] rounded-r-full bg-sidebar-primary transition-opacity",
                     active ? "opacity-100" : "opacity-0",
                   )}
                 />
-                <n.icon className={cn("size-4 shrink-0", active && "text-sidebar-primary")} />
-                {n.label}
+                <n.icon
+                  className={cn(
+                    "relative z-10 size-4 shrink-0 transition-transform duration-200 group-hover:scale-110",
+                    active && "text-sidebar-primary",
+                  )}
+                />
+                <span className="relative z-10">{n.label}</span>
               </Link>
             );
           })}
@@ -185,7 +201,18 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen overflow-x-hidden">
+      <div className="aurora-field" aria-hidden="true">
+        <span className="aurora-blob -left-24 -top-24 size-72 opacity-[0.12] blur-3xl" />
+        <span
+          className="aurora-blob -right-20 top-1/3 size-80 opacity-[0.1] blur-3xl"
+          style={{ animationDelay: "-4s, -2s" }}
+        />
+        <span
+          className="aurora-blob bottom-0 left-1/3 size-64 opacity-[0.08] blur-3xl"
+          style={{ animationDelay: "-8s, -5s" }}
+        />
+      </div>
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -196,23 +223,34 @@ export function AppShell({
         {sidebar}
       </aside>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 lg:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menu"
-        >
-          <div
-            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-            aria-hidden="true"
-          />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-sidebar-border shadow-2xl">
-            {sidebar}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 z-50 lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            initial="hidden"
+            animate="show"
+            exit="hidden"
+          >
+            <motion.div
+              className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+              aria-hidden="true"
+              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+              transition={{ duration: 0.2 }}
+            />
+            <motion.div
+              className="absolute inset-y-0 left-0 w-72 border-r border-sidebar-border shadow-2xl"
+              variants={{ hidden: { x: "-100%" }, show: { x: 0 } }}
+              transition={{ type: "spring", stiffness: 340, damping: 34 }}
+            >
+              {sidebar}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="lg:pl-64">
         <header className="no-print sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-border/70 bg-background/70 px-4 py-4 backdrop-blur-xl md:px-8">
@@ -291,11 +329,20 @@ export function AppShell({
               to={t.to}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex min-h-11 flex-col items-center gap-1 py-2.5 text-[0.65rem] font-medium transition-colors",
+                "relative flex min-h-11 flex-col items-center gap-1 py-2.5 text-[0.65rem] font-medium transition-colors",
                 active ? "text-primary" : "text-muted-foreground",
               )}
             >
-              <t.icon className="size-4.5" />
+              {active && (
+                <motion.span
+                  layoutId="mobile-active-pill"
+                  className="absolute top-0.5 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary"
+                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                />
+              )}
+              <motion.span whileTap={{ scale: 0.85 }}>
+                <t.icon className="size-4.5" />
+              </motion.span>
               {t.label}
             </Link>
           );

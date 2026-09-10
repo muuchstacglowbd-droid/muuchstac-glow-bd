@@ -5,17 +5,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium cursor-pointer transition-all duration-(--duration-base) ease-(--ease-soft) ring-focus disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "shine-sweep inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium cursor-pointer transition-all duration-(--duration-base) ease-(--ease-soft) ring-focus disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-(--duration-base) hover:[&_svg]:scale-110",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-soft hover:bg-primary/90",
-        hero: "gold-gradient text-primary-foreground shadow-glow hover:-translate-y-0.5",
-        soft: "bg-accent text-accent-foreground hover:bg-accent/70",
-        destructive: "bg-destructive text-destructive-foreground shadow-soft hover:bg-destructive/90",
+        default: "bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:-translate-y-px hover:shadow-raised",
+        hero: "gold-gradient text-primary-foreground shadow-glow hover:-translate-y-1 hover:shadow-raised",
+        soft: "bg-accent text-accent-foreground hover:bg-accent/70 hover:-translate-y-px",
+        destructive: "bg-destructive text-destructive-foreground shadow-soft hover:bg-destructive/90 hover:-translate-y-px",
         outline:
-          "border border-input bg-card/60 shadow-soft hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground shadow-soft hover:bg-secondary/80",
+          "border border-input bg-card/60 shadow-soft hover:bg-accent hover:text-accent-foreground hover:-translate-y-px",
+        secondary: "bg-secondary text-secondary-foreground shadow-soft hover:bg-secondary/80 hover:-translate-y-px",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

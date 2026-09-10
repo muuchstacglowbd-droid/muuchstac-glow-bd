@@ -3,7 +3,9 @@
  * All visuals come from tokens in src/styles.css.
  */
 import type { ComponentProps, ReactNode } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { pageVariants } from "@/lib/motion";
 import { Panel } from "./index";
 
 export function Shimmer({ className, ...props }: ComponentProps<"div">) {
@@ -81,5 +83,14 @@ export function PageTransition({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={cn("page-in", className)}>{children}</div>;
+  return (
+    <motion.div
+      className={cn(className)}
+      variants={pageVariants}
+      initial="initial"
+      animate="enter"
+    >
+      {children}
+    </motion.div>
+  );
 }
