@@ -2,14 +2,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { autoSendOrderToCourier } from "@/lib/courier.functions";
 import { COURIER_LABEL } from "@/lib/courier";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, Eye, Plus, Search, Trash2, Users, X } from "lucide-react";
+import { Download, Eye, FileText, Plus, Search, Trash2, Users, X } from "lucide-react";
 import { downloadCsv } from "@/lib/csv";
+import { downloadInvoicePdf } from "@/lib/invoice-pdf";
 import { Shimmer } from "@/components/ds/skeletons";
 import { AppShell } from "@/components/AppShell";
 import { CourierCell, RefreshAllCourierButton } from "@/components/CourierCell";
+import { OrderProductReport } from "@/components/OrderProductReport";
 import {
   createOrder,
   createTeamMember,
@@ -133,6 +135,10 @@ function OrdersPage() {
   const [newMemberPhone, setNewMemberPhone] = useState("");
   const [newMemberCode, setNewMemberCode] = useState("");
   const [savingMember, setSavingMember] = useState(false);
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportPdfBusy, setReportPdfBusy] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const insideCharge = Number(shopSettings?.inside_dhaka_charge ?? 70);
   const outsideCharge = Number(shopSettings?.outside_dhaka_charge ?? 130);
@@ -292,6 +298,51 @@ function OrdersPage() {
     return { value, due, count: filtered.length };
   }, [filtered]);
 
+  /** Which products were ordered, and how many pieces of each — across the
+   * orders currently shown by the filters above. Powers the "Product
+   * report" PDF. */
+  const productSummary = useMemo(() => {
+    const map = new Map<string, { product_name: string; qty: number; orders: number; value: number }>();
+    for (const o of filtered) {
+      const items = (o as Order).order_items ?? [];
+      const seenInThisOrder = new Set<string>();
+      for (const it of items) {
+        const key = it.product_name || "Unnamed product";
+        const row = map.get(key) ?? { product_name: key, qty: 0, orders: 0, value: 0 };
+        row.qty += it.qty;
+        row.value += it.qty * it.unit_price;
+        if (!seenInThisOrder.has(key)) {
+          row.orders += 1;
+          seenInThisOrder.add(key);
+        }
+        map.set(key, row);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => b.qty - a.qty);
+  }, [filtered]);
+
+  const productSummaryTotals = useMemo(
+    () => ({
+      orders: filtered.length,
+      products: productSummary.length,
+      pieces: productSummary.reduce((s, r) => s + r.qty, 0),
+      value: productSummary.reduce((s, r) => s + r.value, 0),
+    }),
+    [filtered, productSummary],
+  );
+
+  const productReportFilterLabel = useMemo(() => {
+    const parts: string[] = [];
+    parts.push(status === "all" ? "All statuses" : `Status: ${status}`);
+    parts.push(source === "all" ? "All sources" : `Source: ${source}`);
+    if (teamFilter !== "all") {
+      const member = teamMembers.find((m) => m.id === teamFilter);
+      if (member) parts.push(`Team: ${member.name}`);
+    }
+    if (q.trim()) parts.push(`Search: "${q.trim()}"`);
+    return parts.join(" · ");
+  }, [status, source, teamFilter, q, teamMembers]);
+
   function addItem(productId: string) {
     const p = products.find((x) => x.id === productId);
     if (!p) return;
@@ -423,6 +474,23 @@ function OrdersPage() {
     );
   }
 
+  async function downloadProductReport() {
+    const el = reportRef.current;
+    if (!el) return;
+    setReportPdfBusy(true);
+    try {
+      await downloadInvoicePdf(
+        el,
+        `product-order-report-${new Date().toISOString().slice(0, 10)}.pdf`,
+      );
+      toast.success("Product report PDF downloaded");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not create the PDF");
+    } finally {
+      setReportPdfBusy(false);
+    }
+  }
+
   function removeOrder(order: Order) {
     if (!confirm(`Delete order #${order.order_no}? This cannot be undone.`)) return;
     orderMutation.mutate(
@@ -470,6 +538,9 @@ function OrdersPage() {
           </Button>
           <Button variant="outline" onClick={() => setTeamOpen(true)}>
             <Users className="size-4" /> Team
+          </Button>
+          <Button variant="outline" onClick={() => setReportOpen(true)}>
+            <FileText className="size-4" /> Product report
           </Button>
           <Button onClick={() => setOpen(true)}>
             <Plus className="size-4" /> New order
@@ -1116,6 +1187,36 @@ function OrdersPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setTeamOpen(false)}>
               Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Product order report</DialogTitle>
+          </DialogHeader>
+
+          <p className="text-sm text-muted-foreground">
+            Shows how many pieces of each product were ordered, based on the orders currently
+            shown by your filters above ({summary.count} orders).
+          </p>
+
+          <div className="overflow-hidden rounded-xl border border-border" ref={reportRef}>
+            <OrderProductReport
+              rows={productSummary}
+              totals={productSummaryTotals}
+              filterLabel={productReportFilterLabel}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReportOpen(false)}>
+              Close
+            </Button>
+            <Button onClick={downloadProductReport} disabled={reportPdfBusy || productSummary.length === 0}>
+              {reportPdfBusy ? "Preparing…" : "Download PDF"}
             </Button>
           </DialogFooter>
         </DialogContent>
